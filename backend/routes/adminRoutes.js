@@ -1,0 +1,15 @@
+const express = require('express');
+const router = express.Router();
+const adminController = require('../controllers/adminController');
+const { protect, isTeacher } = require('../middleware/authMiddleware');
+
+// All admin routes require a logged-in teacher
+router.use(protect, isTeacher);
+
+router.get('/dashboard', adminController.getAdminDashboard);
+router.post('/subject', adminController.createSubject);
+router.post('/topic', adminController.createTopic);
+router.post('/topic/:id/quiz', adminController.createQuizQuestion);
+router.delete('/topic/:id', adminController.deleteTopic);
+
+module.exports = router;

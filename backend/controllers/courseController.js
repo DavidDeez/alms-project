@@ -4,7 +4,7 @@ const adaptiveEngine = require('../services/adaptiveEngine');
 // Handles quiz submission
 exports.submitQuiz = async (req, res) => {
     try {
-        const userId = req.body.userId || 1; 
+        const userId = req.user.id;
         const { topicId, score } = req.body;
 
         if (!topicId || score === undefined) {
@@ -27,25 +27,28 @@ exports.submitQuiz = async (req, res) => {
 // Fetches user progress and topic details
 exports.getDashboard = async (req, res) => {
     try {
-        const userId = 1; // Dummy user ID
+        const userId = req.user.id;
         
         // Get user details
-        const userResult = await db.query('SELECT name FROM Users WHERE id = ?', [userId]);
-        const userName = userResult.rows[0]?.name || "Student";
+        const userResult = await db.query('SELECT name FROM Users WHERE id = $1', [userId]);
+        const userName = userResult.rows[0]?.name || 'Student';
 
         // Get subjects and calculate completion rates
         const subjectsResult = await db.query('SELECT * FROM Subjects', []);
         let subjects = [];
 
         for (const subject of subjectsResult.rows) {
-            const topicsResult = await db.query('SELECT id FROM Topics WHERE subject_id = ?', [subject.id]);
+            const topicsResult = await db.query('SELECT id FROM Topics WHERE subject_id = $1', [subject.id]);
             const totalTopics = topicsResult.rows.length;
             
             if (totalTopics === 0) continue;
 
             let completedTopics = 0;
             for (const topic of topicsResult.rows) {
-                const progressResult = await db.query('SELECT status FROM ProgressTracking WHERE user_id = ? AND topic_id = ?', [userId, topic.id]);
+                const progressResult = await db.query(
+                    'SELECT status FROM ProgressTracking WHERE user_id = $1 AND topic_id = $2',
+                    [userId, topic.id]
+                );
                 if (progressResult.rows.length > 0 && progressResult.rows[0].status === 'completed') {
                     completedTopics++;
                 }
@@ -58,21 +61,20 @@ exports.getDashboard = async (req, res) => {
             });
         }
 
-        // Get current "unlocked" but not completed topics (Needs Review / Continue)
+        // Get current "unlocked" but not completed topics
         const activeTopicsResult = await db.query(`
             SELECT t.id, t.title, s.name as subject_name, pt.status
             FROM ProgressTracking pt
             JOIN Topics t ON pt.topic_id = t.id
             JOIN Subjects s ON t.subject_id = s.id
-            WHERE pt.user_id = ? AND pt.status = 'unlocked'
+            WHERE pt.user_id = $1 AND pt.status = 'unlocked'
         `, [userId]);
 
         const activeTopics = [];
         for (const topic of activeTopicsResult.rows) {
-            // Check if there's a previous failed quiz attempt
             const attemptResult = await db.query(`
                 SELECT score FROM QuizAttempts 
-                WHERE user_id = ? AND topic_id = ? 
+                WHERE user_id = $1 AND topic_id = $2 
                 ORDER BY created_at DESC LIMIT 1
             `, [userId, topic.id]);
 
@@ -90,10 +92,25 @@ exports.getDashboard = async (req, res) => {
             });
         }
 
+        // Get stats
+        const attemptsResult = await db.query(
+            'SELECT AVG(score) as avg_score, COUNT(*) as total_attempts FROM QuizAttempts WHERE user_id = $1',
+            [userId]
+        );
+        const avgScore = Math.round(attemptsResult.rows[0]?.avg_score || 0);
+        const totalAttempts = parseInt(attemptsResult.rows[0]?.total_attempts || 0);
+
+        const completedResult = await db.query(
+            "SELECT COUNT(*) as count FROM ProgressTracking WHERE user_id = $1 AND status = 'completed'",
+            [userId]
+        );
+        const completedTopics = parseInt(completedResult.rows[0]?.count || 0);
+
         res.json({
             userName,
             subjects,
-            activeTopics
+            activeTopics,
+            stats: { avgScore, totalAttempts, completedTopics }
         });
     } catch (error) {
         console.error('Error fetching dashboard:', error);
@@ -104,7 +121,7 @@ exports.getDashboard = async (req, res) => {
 exports.getTopic = async (req, res) => {
     try {
         const { id } = req.params;
-        const topicResult = await db.query('SELECT * FROM Topics WHERE id = ?', [id]);
+        const topicResult = await db.query('SELECT * FROM Topics WHERE id = $1', [id]);
         
         if (topicResult.rows.length === 0) {
             return res.status(404).json({ error: 'Topic not found' });
@@ -120,7 +137,10 @@ exports.getTopic = async (req, res) => {
 exports.getTopicQuiz = async (req, res) => {
     try {
         const { id } = req.params;
-        const quizResult = await db.query('SELECT id, question, options, correct_answer FROM Quizzes WHERE topic_id = ?', [id]);
+        const quizResult = await db.query(
+            'SELECT id, question, options, correct_answer FROM Quizzes WHERE topic_id = $1',
+            [id]
+        );
         
         const questions = quizResult.rows.map(q => ({
             id: q.id,
