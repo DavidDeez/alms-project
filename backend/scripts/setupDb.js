@@ -3,23 +3,27 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 async function setupDatabase() {
-    console.log('Setting up PostgreSQL Database...');
+    const isProd = typeof db.isProduction === 'function' ? db.isProduction() : false;
+    console.log(`Setting up ${isProd ? 'PostgreSQL' : 'SQLite'} Database...`);
+
+    const pkType = isProd ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    const cascade = isProd ? 'CASCADE' : '';
 
     try {
         // Drop all tables in correct dependency order
-        await db.query(`DROP TABLE IF EXISTS ProgressTracking CASCADE`);
-        await db.query(`DROP TABLE IF EXISTS QuizAttempts CASCADE`);
-        await db.query(`DROP TABLE IF EXISTS Quizzes CASCADE`);
-        await db.query(`DROP TABLE IF EXISTS Topics CASCADE`);
-        await db.query(`DROP TABLE IF EXISTS Subjects CASCADE`);
-        await db.query(`DROP TABLE IF EXISTS Users CASCADE`);
+        await db.query(`DROP TABLE IF EXISTS ProgressTracking ${cascade}`);
+        await db.query(`DROP TABLE IF EXISTS QuizAttempts ${cascade}`);
+        await db.query(`DROP TABLE IF EXISTS Quizzes ${cascade}`);
+        await db.query(`DROP TABLE IF EXISTS Topics ${cascade}`);
+        await db.query(`DROP TABLE IF EXISTS Subjects ${cascade}`);
+        await db.query(`DROP TABLE IF EXISTS Users ${cascade}`);
 
         console.log('Old tables dropped. Recreating...');
 
         // Users Table
         await db.query(`
             CREATE TABLE Users (
-                id SERIAL PRIMARY KEY,
+                id ${pkType},
                 name TEXT NOT NULL,
                 email TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
@@ -30,7 +34,7 @@ async function setupDatabase() {
         // Subjects Table
         await db.query(`
             CREATE TABLE Subjects (
-                id SERIAL PRIMARY KEY,
+                id ${pkType},
                 name TEXT NOT NULL
             )
         `);
@@ -38,7 +42,7 @@ async function setupDatabase() {
         // Topics Table
         await db.query(`
             CREATE TABLE Topics (
-                id SERIAL PRIMARY KEY,
+                id ${pkType},
                 subject_id INTEGER NOT NULL REFERENCES Subjects(id),
                 order_index INTEGER NOT NULL,
                 title TEXT NOT NULL,
@@ -49,7 +53,7 @@ async function setupDatabase() {
         // Quizzes Table
         await db.query(`
             CREATE TABLE Quizzes (
-                id SERIAL PRIMARY KEY,
+                id ${pkType},
                 topic_id INTEGER NOT NULL REFERENCES Topics(id),
                 question TEXT NOT NULL,
                 options TEXT NOT NULL,
@@ -60,7 +64,7 @@ async function setupDatabase() {
         // QuizAttempts
         await db.query(`
             CREATE TABLE QuizAttempts (
-                id SERIAL PRIMARY KEY,
+                id ${pkType},
                 user_id INTEGER NOT NULL,
                 topic_id INTEGER NOT NULL,
                 score REAL NOT NULL,
@@ -97,8 +101,18 @@ async function setupDatabase() {
             `INSERT INTO Subjects (name) VALUES ($1), ($2) RETURNING id`,
             ['Mathematics', 'Basic Science']
         );
-        const mathId = subjectRes.rows[0].id;
-        const sciId  = subjectRes.rows[1].id;
+        // SQLite RETURNING clause compatibility fallback
+        let mathId, sciId;
+        if (subjectRes.rows && subjectRes.rows.length > 0) {
+            mathId = subjectRes.rows[0].id;
+            sciId  = subjectRes.rows[1].id;
+        } else {
+            // Fallback for older SQLite versions if they don't support RETURNING
+            const mathRow = await db.query("SELECT id FROM Subjects WHERE name = 'Mathematics'");
+            const sciRow = await db.query("SELECT id FROM Subjects WHERE name = 'Basic Science'");
+            mathId = mathRow.rows[0].id;
+            sciId = sciRow.rows[0].id;
+        }
 
         // Seed Topics
         const topicRes = await db.query(
@@ -124,7 +138,17 @@ async function setupDatabase() {
             ]
         );
 
-        const [algId, linId, photoId] = topicRes.rows.map(r => r.id);
+        let algId, linId, photoId;
+        if (topicRes.rows && topicRes.rows.length > 0) {
+            [algId, linId, photoId] = topicRes.rows.map(r => r.id);
+        } else {
+            const algRow = await db.query("SELECT id FROM Topics WHERE title = 'Algebra Fundamentals'");
+            const linRow = await db.query("SELECT id FROM Topics WHERE title = 'Linear Equations'");
+            const photoRow = await db.query("SELECT id FROM Topics WHERE title = 'Photosynthesis'");
+            algId = algRow.rows[0].id;
+            linId = linRow.rows[0].id;
+            photoId = photoRow.rows[0].id;
+        }
 
         // Seed Quizzes
         await db.query(
