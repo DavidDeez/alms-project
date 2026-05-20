@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
         });
     } catch (error) {
         console.error('Registration Error:', error);
-        res.status(500).json({ error: 'Server error during registration' });
+        res.status(500).json({ error: 'Server error during registration', detail: error.message, stack: error.stack });
     }
 };
 
@@ -60,6 +60,10 @@ exports.login = async (req, res) => {
         }
 
         // Generate JWT
+        if (!process.env.JWT_SECRET) {
+            throw new Error('JWT_SECRET env variable is not set on the server!');
+        }
+
         const token = jwt.sign(
             { id: user.id, role: user.role },
             process.env.JWT_SECRET,
@@ -73,6 +77,6 @@ exports.login = async (req, res) => {
         });
     } catch (error) {
         console.error('Login Error:', error);
-        res.status(500).json({ error: 'Server error during login' });
+        res.status(500).json({ error: 'Server error during login', detail: error.message, stack: error.stack });
     }
 };
