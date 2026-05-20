@@ -31,6 +31,7 @@ app.get('/api/debug', (req, res) => {
         DB_USER:        process.env.DB_USER || '(not set)',
         DB_PASSWORD:    process.env.DB_PASSWORD ? 'SET' : '(not set)',
         JWT_SECRET:     process.env.JWT_SECRET ? 'SET' : '(not set)',
+        OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY ? 'SET' : '(not set)',
     });
 });
 

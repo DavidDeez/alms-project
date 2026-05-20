@@ -92,8 +92,8 @@ async function setupDatabase() {
         // Seed Users
         await db.query(
             `INSERT INTO Users (name, email, password_hash, role) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)`,
-            ['Oluwaseun', 'student@alms.com', studentHash, 'student',
-             'Admin Teacher', 'teacher@alms.com', teacherHash, 'teacher']
+            ['Demo Student', 'student@alms.com', studentHash, 'student',
+             'Demo Teacher', 'teacher@alms.com', teacherHash, 'teacher']
         );
 
         // Seed Subjects

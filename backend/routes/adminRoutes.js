@@ -10,6 +10,7 @@ router.get('/dashboard', adminController.getAdminDashboard);
 router.post('/subject', adminController.createSubject);
 router.post('/topic', adminController.createTopic);
 router.post('/topic/:id/quiz', adminController.createQuizQuestion);
+router.post('/topic/:id/generate-quiz', adminController.generateQuiz);
 router.delete('/topic/:id', adminController.deleteTopic);
 
 module.exports = router;

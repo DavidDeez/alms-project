@@ -46,6 +46,7 @@ export default function AdminDashboard() {
     const [showTopicModal, setShowTopicModal] = useState(false);
     const [showQuizModal, setShowQuizModal] = useState(false);
     const [selectedTopicId, setSelectedTopicId] = useState(null);
+    const [generatingId, setGeneratingId] = useState(null);
 
     const [subjectName, setSubjectName] = useState('');
     const [topicForm, setTopicForm] = useState({ subject_id: '', title: '', content: '' });
@@ -133,6 +134,19 @@ export default function AdminDashboard() {
             fetchData();
         } catch (err) {
             alert(err.response?.data?.error || 'Failed');
+        }
+    };
+
+    const handleGenerateAIQuiz = async (topicId) => {
+        setGeneratingId(topicId);
+        try {
+            const res = await axios.post(`${API_URL}/api/admin/topic/${topicId}/generate-quiz`, {}, { headers });
+            flash(res.data.message || 'AI Quiz generated!');
+            fetchData();
+        } catch (err) {
+            alert(err.response?.data?.error || 'Failed to generate AI Quiz. Make sure OPENROUTER_API_KEY is configured.');
+        } finally {
+            setGeneratingId(null);
         }
     };
 
@@ -317,6 +331,20 @@ export default function AdminDashboard() {
                                                     }}
                                                 >
                                                     + Quiz Q
+                                                </button>
+                                                <button
+                                                    onClick={() => handleGenerateAIQuiz(topic.id)}
+                                                    disabled={generatingId === topic.id}
+                                                    style={{
+                                                        background: 'rgba(129,140,248,0.12)',
+                                                        border: '1px solid rgba(129,140,248,0.3)',
+                                                        color: '#818cf8', borderRadius: '0.5rem',
+                                                        padding: '0.4rem 0.8rem', fontSize: '0.8rem',
+                                                        cursor: 'pointer', fontWeight: 600,
+                                                        display: 'flex', alignItems: 'center', gap: '0.25rem'
+                                                    }}
+                                                >
+                                                    {generatingId === topic.id ? '⚡ Generating...' : '✨ AI Quiz'}
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteTopic(topic.id)}

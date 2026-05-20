@@ -106,3 +106,99 @@ exports.deleteTopic = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+// POST /api/admin/topic/:id/generate-quiz — AI generation via OpenRouter
+exports.generateQuiz = async (req, res) => {
+    try {
+        const { id: topicId } = req.params;
+
+        // 1. Get topic details
+        const topicResult = await db.query('SELECT title, content FROM Topics WHERE id = $1', [topicId]);
+        if (topicResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Topic not found' });
+        }
+        const topic = topicResult.rows[0];
+
+        // 2. Setup OpenRouter call
+        const apiKey = process.env.OPENROUTER_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({ error: 'OpenRouter API Key (OPENROUTER_API_KEY) is not set on the server!' });
+        }
+
+        const model = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+        console.log(`Generating quiz for topic: ${topic.title} using model: ${model}`);
+
+        const systemPrompt = `You are an expert educator. Generate 5 multiple-choice questions for the following lesson content. 
+Return the output ONLY as a valid JSON array. Each object in the array MUST have the exact keys: "question", "options", and "correct_answer".
+"options" must be an array of exactly 4 strings. 
+"correct_answer" must be a string that matches exactly one of the options.
+Do not include any markdown format tags like \`\`\`json or explanations. Only return raw JSON.`;
+
+        const userPrompt = `Topic Title: ${topic.title}
+Lesson Content: ${topic.content || 'Introduce the topic and test general knowledge about it.'}`;
+
+        const fetchFn = globalThis.fetch || require('node-fetch'); // Fallback just in case
+        const response = await fetchFn('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': 'https://alms-project.onrender.com',
+                'X-Title': 'GradeGuide'
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userPrompt }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+        }
+
+        const responseData = await response.json();
+        const content = responseData.choices?.[0]?.message?.content;
+        
+        if (!content) {
+            throw new Error('Empty response from OpenRouter API');
+        }
+
+        // Parse JSON output
+        let cleanContent = content.trim();
+        if (cleanContent.startsWith('```')) {
+            cleanContent = cleanContent.replace(/^```json\s*/i, '').replace(/```$/, '').trim();
+        }
+
+        let questions;
+        try {
+            questions = JSON.parse(cleanContent);
+        } catch (e) {
+            console.error('Failed to parse model output:', cleanContent);
+            throw new Error('Generated quiz content is not valid JSON: ' + e.message);
+        }
+
+        if (!Array.isArray(questions)) {
+            throw new Error('Generated quiz is not an array');
+        }
+
+        // 3. Insert generated quizzes into database
+        for (const q of questions) {
+            const opts = q.options || [];
+            const correctAns = q.correct_answer || '';
+            await db.query(
+                'INSERT INTO Quizzes (topic_id, question, options, correct_answer) VALUES ($1, $2, $3, $4)',
+                [topicId, q.question, JSON.stringify(opts), correctAns]
+            );
+        }
+
+        res.json({ message: 'AI Quiz generated successfully!', count: questions.length });
+
+    } catch (error) {
+        console.error('AI Quiz generation error:', error);
+        res.status(500).json({ error: 'Failed to generate quiz: ' + error.message });
+    }
+};
