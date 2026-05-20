@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const courseRoutes = require('./routes/courseRoutes');
 const authRoutes = require('./routes/authRoutes');
+const setupDatabase = require('./scripts/setupDb');
 
 const app = express();
 app.use(cors());
@@ -15,6 +16,15 @@ app.use('/api/courses', courseRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to ALMS Backend API' });
+});
+
+app.get('/api/seed', async (req, res) => {
+    try {
+        await setupDatabase();
+        res.json({ message: 'Database seeded successfully! You can now use the app.' });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to seed database: ' + error.message });
+    }
 });
 
 const PORT = process.env.PORT || 5000;
