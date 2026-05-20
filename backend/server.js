@@ -20,6 +20,20 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to ALMS Backend API', status: 'running' });
 });
 
+// Diagnostic endpoint — shows which env vars are set (values masked)
+app.get('/api/debug', (req, res) => {
+    res.json({
+        NODE_ENV:       process.env.NODE_ENV || '(not set)',
+        DATABASE_URL:   process.env.DATABASE_URL ? `SET (${process.env.DATABASE_URL.substring(0, 30)}...)` : '(NOT SET)',
+        DB_HOST:        process.env.DB_HOST || '(not set)',
+        DB_PORT:        process.env.DB_PORT || '(not set)',
+        DB_NAME:        process.env.DB_NAME || '(not set)',
+        DB_USER:        process.env.DB_USER || '(not set)',
+        DB_PASSWORD:    process.env.DB_PASSWORD ? 'SET' : '(not set)',
+        JWT_SECRET:     process.env.JWT_SECRET ? 'SET' : '(not set)',
+    });
+});
+
 app.get('/api/seed', async (req, res) => {
     try {
         await setupDatabase();
