@@ -31,7 +31,8 @@ app.get('/api/seed', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to seed database: ' + error.message });
+        console.error('Seed error:', error);
+        res.status(500).json({ error: 'Failed to seed database: ' + error.message, detail: error.stack });
     }
 });
 
