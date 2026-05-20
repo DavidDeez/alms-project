@@ -1,4 +1,3 @@
-const sqlite3 = require('sqlite3').verbose();
 const { Pool } = require('pg');
 const path = require('path');
 require('dotenv').config();
@@ -14,6 +13,7 @@ if (isProduction) {
     });
 } else {
     console.log('Connecting to SQLite Database (Local)...');
+    const sqlite3 = require('sqlite3').verbose();
     const dbPath = path.resolve(__dirname, '../database.sqlite');
     db = new sqlite3.Database(dbPath, (err) => {
         if (err) console.error('Error opening SQLite database', err.message);
