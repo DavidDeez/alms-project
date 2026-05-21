@@ -8,10 +8,10 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const getVideoUrl = (title) => {
     if (!title) return null;
     const t = title.toLowerCase();
-    if (t.includes('algebra')) return 'https://www.youtube.com/embed/NybHkZWBCoQ';
-    if (t.includes('linear')) return 'https://www.youtube.com/embed/5V_dC020Vl8';
+    if (t.includes('algebra')) return 'https://www.youtube.com/embed/NybHckSEQBI';
+    if (t.includes('linear')) return 'https://www.youtube.com/embed/L71r6N81y1s';
     if (t.includes('photo')) return 'https://www.youtube.com/embed/CMiPYHNNg28';
-    if (t.includes('cellular') || t.includes('respiration')) return 'https://www.youtube.com/embed/4Eo7JtRA7lg';
+    if (t.includes('cellular') || t.includes('respiration')) return 'https://www.youtube.com/embed/SrP5930gV_8';
     return null;
 };
 

@@ -269,10 +269,10 @@ export default function Curriculum() {
         
         // Curated YouTube Video mappings matching Lesson.jsx, or dynamic fallback search url
         let videoId = null;
-        if (lower.includes('algebra')) videoId = 'NybHkZWBCoQ';
-        else if (lower.includes('linear')) videoId = '5V_dC020Vl8';
+        if (lower.includes('algebra')) videoId = 'NybHckSEQBI';
+        else if (lower.includes('linear')) videoId = 'L71r6N81y1s';
         else if (lower.includes('photo')) videoId = 'CMiPYHNNg28';
-        else if (lower.includes('cellular') || lower.includes('respiration')) videoId = '4Eo7JtRA7lg';
+        else if (lower.includes('cellular') || lower.includes('respiration')) videoId = 'SrP5930gV_8';
 
         if (videoId) {
             setYoutubeUrl(`https://www.youtube.com/embed/${videoId}`);
