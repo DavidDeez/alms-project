@@ -214,7 +214,8 @@ Do not include any markdown format tags like \`\`\`json or explanations. Only re
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userPrompt }
-                ]
+                ],
+                max_tokens: 1500 // Limit output size to prevent 402 credit reservation errors on low-balance OpenRouter accounts
             })
         });
 
