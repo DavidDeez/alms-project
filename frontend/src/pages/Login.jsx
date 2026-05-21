@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export default function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const [form, setForm] = useState({ email: '', password: '' });
+    const [form, setForm] = useState({ email: '', password: '', name: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -118,6 +118,20 @@ export default function Login() {
                     </p>
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                                Your Name (Optional — overrides display name)
+                            </label>
+                            <input
+                                id="login-name"
+                                type="text"
+                                placeholder="Enter your name to personalize your dashboard"
+                                value={form.name}
+                                onChange={e => setForm({ ...form, name: e.target.value })}
+                                className="input-field"
+                            />
+                        </div>
+
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
                                 Email address

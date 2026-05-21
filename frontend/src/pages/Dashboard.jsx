@@ -180,7 +180,7 @@ export default function Dashboard() {
                     fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700,
                     color: 'var(--text-primary)', margin: '0 0 1.25rem', letterSpacing: '-0.01em'
                 }}>
-                    🚀 Active Topics
+                    Active Topics
                 </h2>
 
                 {data.activeTopics.length === 0 ? (
@@ -208,7 +208,7 @@ export default function Dashboard() {
                     fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700,
                     color: 'var(--text-primary)', margin: '0 0 1.25rem', letterSpacing: '-0.01em'
                 }}>
-                    📈 Subject Mastery
+                    Subject Mastery
                 </h2>
                 <div className="card" style={{ padding: '2rem' }}>
                     {data.subjects.length === 0 ? (

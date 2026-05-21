@@ -5,6 +5,16 @@ import { useAuth } from '../context/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+const getVideoUrl = (title) => {
+    if (!title) return null;
+    const t = title.toLowerCase();
+    if (t.includes('algebra')) return 'https://www.youtube.com/embed/NybHkZWBCoQ';
+    if (t.includes('linear')) return 'https://www.youtube.com/embed/5V_dC020Vl8';
+    if (t.includes('photo')) return 'https://www.youtube.com/embed/CMiPYHNNg28';
+    if (t.includes('cellular') || t.includes('respiration')) return 'https://www.youtube.com/embed/4Eo7JtRA7lg';
+    return null;
+};
+
 export default function Lesson() {
     const { topicId } = useParams();
     const navigate = useNavigate();
@@ -137,7 +147,7 @@ export default function Lesson() {
                 </div>
             </div>
 
-            {/* Video Placeholder */}
+            {/* Video Lesson */}
             <div className="card animate-fade-in-up" style={{
                 padding: '1.75rem',
                 marginBottom: '2rem',
@@ -152,35 +162,79 @@ export default function Lesson() {
                 }}>
                     🎬 Video Lesson
                 </h2>
-                <div style={{
-                    background: 'rgba(0,0,0,0.4)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    borderRadius: '1rem',
-                    height: 220,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.75rem',
-                    cursor: 'pointer',
-                    transition: 'background 0.3s ease'
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(0,0,0,0.4)'}
-                >
+                {getVideoUrl(topic.title) ? (
                     <div style={{
-                        width: 64, height: 64, borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #6366f1, #38bdf8)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.5rem',
-                        boxShadow: '0 8px 24px rgba(99,102,241,0.4)'
+                        position: 'relative',
+                        paddingBottom: '56.25%', // 16:9 Aspect Ratio
+                        height: 0,
+                        overflow: 'hidden',
+                        borderRadius: '1rem',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        boxShadow: '0 12px 32px rgba(0,0,0,0.5)'
                     }}>
-                        ▶
+                        <iframe
+                            src={getVideoUrl(topic.title)}
+                            title={topic.title}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                            style={{
+                                position: 'absolute',
+                                top: 0, left: 0,
+                                width: '100%', height: '100%'
+                            }}
+                        />
                     </div>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>
-                        Video lesson coming soon
-                    </p>
-                </div>
+                ) : (
+                    <div style={{
+                        background: 'rgba(0,0,0,0.4)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        borderRadius: '1rem',
+                        padding: '2.5rem 1.5rem',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '1rem',
+                        textAlign: 'center'
+                    }}>
+                        <div style={{
+                            width: 56, height: 56, borderRadius: '50%',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '1.5rem'
+                        }}>
+                            🔍
+                        </div>
+                        <div>
+                            <p style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 600, margin: '0 0 0.25rem' }}>
+                                Custom Video Lesson
+                            </p>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.825rem', margin: 0, maxWidth: 400 }}>
+                                There is no direct video linked to this custom lesson. Click below to search YouTube for educational resources on this topic.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(topic.title + ' educational lesson')}`, '_blank')}
+                            className="btn-ghost"
+                            style={{
+                                padding: '0.6rem 1.25rem',
+                                fontSize: '0.85rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                border: '1px solid rgba(99,102,241,0.4)',
+                                color: '#818cf8',
+                                background: 'transparent',
+                                cursor: 'pointer',
+                                borderRadius: '0.5rem'
+                            }}
+                        >
+                            Search YouTube ↗
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Footer CTA */}

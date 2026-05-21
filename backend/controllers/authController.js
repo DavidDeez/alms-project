@@ -39,7 +39,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, name } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({ error: 'Please provide email and password' });
@@ -57,6 +57,12 @@ exports.login = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        // If name is provided, update it in the database persistently
+        if (name && name.trim()) {
+            await db.query('UPDATE Users SET name = $1 WHERE id = $2', [name.trim(), user.id]);
+            user.name = name.trim();
         }
 
         // Generate JWT
