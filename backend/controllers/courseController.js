@@ -106,10 +106,21 @@ exports.getDashboard = async (req, res) => {
         );
         const completedTopics = parseInt(completedResult.rows[0]?.count || 0);
 
+        // Fetch all topics with progress status for mapping to the NERDC curriculum
+        const allTopicsResult = await db.query(`
+            SELECT t.id, t.title, t.subject_id, t.order_index, s.name as subject_name,
+                   COALESCE(pt.status, 'locked') as progress_status
+            FROM Topics t
+            JOIN Subjects s ON t.subject_id = s.id
+            LEFT JOIN ProgressTracking pt ON pt.topic_id = t.id AND pt.user_id = $1
+            ORDER BY t.subject_id, t.order_index
+        `, [userId]);
+
         res.json({
             userName,
             subjects,
             activeTopics,
+            allTopics: allTopicsResult.rows,
             stats: { avgScore, totalAttempts, completedTopics }
         });
     } catch (error) {

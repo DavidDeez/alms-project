@@ -8,6 +8,7 @@ import Quiz from './pages/Quiz';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
+import Curriculum from './pages/Curriculum';
 
 function Navbar() {
     const { user, logout } = useAuth();
@@ -70,6 +71,7 @@ function Navbar() {
                     {user.role === 'teacher' && (
                         <Link to="/admin" className="nav-link">Admin Panel</Link>
                     )}
+                    <Link to="/curriculum" className="nav-link">NERDC Curriculum</Link>
                 </div>
 
                 {/* User info + logout */}
@@ -130,6 +132,11 @@ function AppRoutes() {
                     <Route path="/admin" element={
                         <ProtectedRoute requireTeacher={true}>
                             <AdminDashboard />
+                        </ProtectedRoute>
+                    } />
+                    <Route path="/curriculum" element={
+                        <ProtectedRoute>
+                            <Curriculum />
                         </ProtectedRoute>
                     } />
                 </Routes>
