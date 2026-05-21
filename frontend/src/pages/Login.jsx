@@ -28,25 +28,9 @@ export default function Login() {
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            minHeight: '100vh',
-            background: 'var(--bg-primary)',
-            fontFamily: 'Inter, sans-serif'
-        }}>
+        <div className="split-layout">
             {/* Left — Brand Panel */}
-            <div style={{
-                flex: '0 0 45%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '3rem',
-                background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(56,189,248,0.1) 100%)',
-                borderRight: '1px solid var(--border)',
-                position: 'relative',
-                overflow: 'hidden'
-            }}>
+            <div className="brand-panel">
                 {/* Decorative orbs */}
                 <div style={{
                     position: 'absolute', top: '10%', left: '10%',
@@ -117,13 +101,7 @@ export default function Login() {
             </div>
 
             {/* Right — Login Form */}
-            <div style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '3rem 2rem'
-            }}>
+            <div className="form-panel">
                 <div style={{ width: '100%', maxWidth: 420 }} className="animate-fade-in-up">
                     <h2 style={{
                         fontFamily: 'Outfit, sans-serif',

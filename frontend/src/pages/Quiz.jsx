@@ -53,7 +53,7 @@ export default function Quiz() {
 
     if (loading) {
         return (
-            <div style={{ maxWidth: 760, margin: '0 auto', padding: '3rem 1.5rem' }}>
+            <div className="page-container" style={{ maxWidth: 760 }}>
                 <div className="skeleton" style={{ height: 20, width: '20%', marginBottom: '2rem', borderRadius: '0.5rem' }} />
                 <div className="skeleton" style={{ height: 48, width: '55%', marginBottom: '1rem', borderRadius: '0.5rem' }} />
                 {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 160, borderRadius: '1rem', marginBottom: '1rem' }} />)}
@@ -69,9 +69,8 @@ export default function Quiz() {
         const border = passed ? 'rgba(52,211,153,0.2)' : 'rgba(248,113,113,0.2)';
 
         return (
-            <div style={{ maxWidth: 600, margin: '4rem auto', padding: '0 1.5rem', fontFamily: 'Inter, sans-serif' }}>
-                <div className="card animate-fade-in-up" style={{
-                    padding: '3rem 2.5rem',
+            <div className="page-container" style={{ maxWidth: 600, margin: '2rem auto', fontFamily: 'Inter, sans-serif' }}>
+                <div className="card card-padding animate-fade-in-up" style={{
                     textAlign: 'center',
                     background: bg,
                     borderColor: border
@@ -173,7 +172,7 @@ export default function Quiz() {
 
     /* ─── QUIZ SCREEN ───────────────────────────────────────── */
     return (
-        <div style={{ maxWidth: 760, margin: '0 auto', padding: '2.5rem 1.5rem', fontFamily: 'Inter, sans-serif' }}>
+        <div className="page-container" style={{ maxWidth: 760, fontFamily: 'Inter, sans-serif' }}>
 
             {/* Back link */}
             <div className="animate-fade-in" style={{ marginBottom: '1.5rem' }}>
@@ -192,12 +191,12 @@ export default function Quiz() {
 
             {/* Header */}
             <div className="card animate-fade-in-up" style={{
-                padding: '1.75rem 2rem',
+                padding: '1.25rem 1.5rem',
                 marginBottom: '1.5rem',
                 background: 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(56,189,248,0.06) 100%)',
                 borderColor: 'rgba(129,140,248,0.2)'
             }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                <div className="flex-responsive" style={{ marginBottom: '1rem' }}>
                     <div>
                         <h1 style={{
                             fontFamily: 'Outfit, sans-serif',
@@ -210,7 +209,7 @@ export default function Quiz() {
                             {answeredCount} of {totalCount} answered · Pass mark: 65%
                         </p>
                     </div>
-                    <span className="badge badge-primary" style={{ fontSize: '0.75rem', marginTop: '0.25rem' }}>
+                    <span className="badge badge-primary" style={{ fontSize: '0.75rem', marginTop: '0.25rem', alignSelf: 'center' }}>
                         {totalCount} Questions
                     </span>
                 </div>
@@ -225,8 +224,8 @@ export default function Quiz() {
                 {questions.map((q, index) => (
                     <div
                         key={q.id}
-                        className="card animate-fade-in-up"
-                        style={{ padding: '1.75rem', animationDelay: `${index * 0.06}s`, animationFillMode: 'both' }}
+                        className="card question-card animate-fade-in-up"
+                        style={{ animationDelay: `${index * 0.06}s`, animationFillMode: 'both' }}
                     >
                         {/* Question */}
                         <p style={{
@@ -317,9 +316,7 @@ export default function Quiz() {
             </div>
 
             {/* Submit */}
-            <div className="card animate-fade-in-up" style={{
-                padding: '1.5rem 2rem',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            <div className="card card-padding animate-fade-in-up flex-responsive" style={{
                 animationDelay: `${questions.length * 0.06}s`, animationFillMode: 'both',
                 background: answeredCount === totalCount
                     ? 'rgba(52,211,153,0.05)' : 'var(--surface)',
@@ -345,7 +342,7 @@ export default function Quiz() {
                     onClick={submitQuiz}
                     disabled={submitting || answeredCount < totalCount}
                     className="btn-primary"
-                    style={{ fontSize: '0.95rem', padding: '0.75rem 1.75rem', whiteSpace: 'nowrap', marginLeft: '1rem' }}
+                    style={{ fontSize: '0.95rem', padding: '0.75rem 1.75rem', whiteSpace: 'nowrap' }}
                 >
                     {submitting ? 'Evaluating...' : 'Submit Quiz →'}
                 </button>

@@ -124,16 +124,16 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '3rem 1.5rem' }}>
+            <div className="page-container">
                 {/* Skeleton */}
                 <div style={{ marginBottom: '2rem' }}>
                     <div className="skeleton" style={{ height: 40, width: '40%', marginBottom: '0.75rem' }} />
                     <div className="skeleton" style={{ height: 20, width: '60%' }} />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+                <div className="stats-grid" style={{ marginBottom: '2rem' }}>
                     {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 90, borderRadius: '1rem' }} />)}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                <div className="topics-grid">
                     {[1,2].map(i => <div key={i} className="skeleton" style={{ height: 200, borderRadius: '1.25rem' }} />)}
                 </div>
             </div>
@@ -150,7 +150,7 @@ export default function Dashboard() {
     }
 
     return (
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '2.5rem 1.5rem', fontFamily: 'Inter, sans-serif' }}>
+        <div className="page-container" style={{ fontFamily: 'Inter, sans-serif' }}>
 
             {/* Hero */}
             <div className="animate-fade-in-up" style={{ marginBottom: '2.5rem' }}>
@@ -168,7 +168,7 @@ export default function Dashboard() {
             </div>
 
             {/* Stats */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+            <div className="stats-grid">
                 <StatCard icon="✅" label="Topics Completed"  value={data.stats?.completedTopics ?? 0} color="#34d399" />
                 <StatCard icon="📊" label="Average Score"     value={`${data.stats?.avgScore ?? 0}%`} color="#818cf8" />
                 <StatCard icon="🎯" label="Quiz Attempts"     value={data.stats?.totalAttempts ?? 0} color="#38bdf8" />
@@ -194,7 +194,7 @@ export default function Dashboard() {
                         </p>
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.25rem' }}>
+                    <div className="topics-grid">
                         {data.activeTopics.map((topic, i) => (
                             <TopicCard key={topic.id} topic={topic} index={i} onStart={id => navigate(`/lesson/${id}`)} />
                         ))}

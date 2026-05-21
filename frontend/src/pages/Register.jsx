@@ -25,25 +25,9 @@ export default function Register() {
     };
 
     return (
-        <div style={{
-            display: 'flex',
-            minHeight: '100vh',
-            background: 'var(--bg-primary)',
-            fontFamily: 'Inter, sans-serif'
-        }}>
+        <div className="split-layout">
             {/* Left — Brand Panel */}
-            <div style={{
-                flex: '0 0 40%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '3rem',
-                background: 'linear-gradient(135deg, rgba(56,189,248,0.12) 0%, rgba(99,102,241,0.1) 100%)',
-                borderRight: '1px solid var(--border)',
-                position: 'relative',
-                overflow: 'hidden'
-            }}>
+            <div className="brand-panel">
                 <div style={{
                     position: 'absolute', top: '20%', right: '0%',
                     width: 280, height: 280,
@@ -101,13 +85,7 @@ export default function Register() {
             </div>
 
             {/* Right — Register Form */}
-            <div style={{
-                flex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '3rem 2rem'
-            }}>
+            <div className="form-panel">
                 <div style={{ width: '100%', maxWidth: 420 }} className="animate-fade-in-up">
                     <h2 style={{
                         fontFamily: 'Outfit, sans-serif',

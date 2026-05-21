@@ -54,7 +54,7 @@ export default function Lesson() {
     }
 
     return (
-        <div style={{ maxWidth: 820, margin: '0 auto', padding: '2.5rem 1.5rem', fontFamily: 'Inter, sans-serif' }}>
+        <div className="page-container" style={{ maxWidth: 820, fontFamily: 'Inter, sans-serif' }}>
 
             {/* Breadcrumb */}
             <div className="animate-fade-in" style={{ marginBottom: '1.5rem' }}>
@@ -72,8 +72,7 @@ export default function Lesson() {
             </div>
 
             {/* Header Card */}
-            <div className="card animate-fade-in-up" style={{
-                padding: '2.5rem',
+            <div className="card card-padding animate-fade-in-up" style={{
                 marginBottom: '1.5rem',
                 background: 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(56,189,248,0.06) 100%)',
                 borderColor: 'rgba(129,140,248,0.2)',
@@ -114,8 +113,7 @@ export default function Lesson() {
             </div>
 
             {/* Content Card */}
-            <div className="card animate-fade-in-up" style={{
-                padding: '2.5rem',
+            <div className="card card-padding animate-fade-in-up" style={{
                 marginBottom: '1.5rem',
                 animationDelay: '0.1s', animationFillMode: 'both'
             }}>
@@ -186,9 +184,8 @@ export default function Lesson() {
             </div>
 
             {/* Footer CTA */}
-            <div className="card animate-fade-in-up" style={{
+            <div className="card flex-responsive animate-fade-in-up" style={{
                 padding: '1.5rem 2rem',
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 background: 'rgba(52,211,153,0.05)', borderColor: 'rgba(52,211,153,0.15)',
                 animationDelay: '0.3s', animationFillMode: 'both'
             }}>

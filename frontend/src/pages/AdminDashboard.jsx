@@ -12,12 +12,14 @@ function Modal({ title, children, onClose }) {
             background: 'rgba(0,0,0,0.7)',
             backdropFilter: 'blur(8px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '1rem'
+            padding: '1rem',
+            overflowY: 'auto'
         }} className="animate-fade-in">
             <div className="card animate-fade-in-up" style={{
                 width: '100%', maxWidth: 520,
-                padding: '2rem',
-                position: 'relative'
+                padding: '1.5rem',
+                position: 'relative',
+                margin: 'auto'
             }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                     <h3 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>{title}</h3>
@@ -227,7 +229,7 @@ export default function AdminDashboard() {
     const currentSubject = data?.subjects.find(s => s.id === activeSubject);
 
     return (
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '2rem 1.5rem', fontFamily: 'Inter, sans-serif' }}>
+        <div className="page-container" style={{ maxWidth: 1100, fontFamily: 'Inter, sans-serif' }}>
 
             {/* Success Toast */}
             {successMsg && (
@@ -243,14 +245,14 @@ export default function AdminDashboard() {
             )}
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
+            <div className="flex-responsive" style={{ marginBottom: '2.5rem' }}>
                 <div>
                     <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
                         <span className="gradient-text">Admin Panel</span>
                     </h1>
                     <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage subjects, topics, and quiz content</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>👋 {user?.name}</span>
                     <button onClick={() => { logout(); navigate('/login'); }} className="btn-ghost" style={{ fontSize: '0.85rem' }}>
                         Sign out
@@ -259,7 +261,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Stats Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2.5rem' }}>
+            <div className="stats-grid">
                 {[
                     { label: 'Total Subjects', value: data?.subjects.length ?? 0, icon: '📚', color: '#818cf8' },
                     { label: 'Total Topics', value: data?.subjects.reduce((acc, s) => acc + s.topics.length, 0) ?? 0, icon: '📖', color: '#38bdf8' },
@@ -321,7 +323,7 @@ export default function AdminDashboard() {
 
             {/* Main Content */}
             {activeTab === 'content' && (
-                <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '1.5rem' }}>
+                <div className="admin-grid">
 
                 {/* Sidebar — Subjects */}
                 <div>
@@ -336,7 +338,7 @@ export default function AdminDashboard() {
                         }}>+ Add</button>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div className="subject-sidebar-list">
                         {data?.subjects.map(subject => (
                             <button
                                 key={subject.id}
@@ -376,7 +378,7 @@ export default function AdminDashboard() {
                 <div>
                     {currentSubject ? (
                         <>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                            <div className="flex-responsive" style={{ marginBottom: '1.25rem' }}>
                                 <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
                                     {currentSubject.name}
                                     <span style={{ marginLeft: '0.75rem', fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 400 }}>— Topics</span>
@@ -392,8 +394,8 @@ export default function AdminDashboard() {
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
                                 {currentSubject.topics.map((topic, i) => (
                                     <div key={topic.id} className="card" style={{ padding: '1.25rem 1.5rem' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                            <div style={{ flex: 1 }}>
+                                        <div className="topic-card-inner">
+                                            <div style={{ flex: 1, width: '100%' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                                                     <span style={{
                                                         width: 28, height: 28,
@@ -406,13 +408,13 @@ export default function AdminDashboard() {
                                                         {topic.title}
                                                     </h4>
                                                 </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', paddingLeft: '2.5rem' }}>
+                                                <div className="topic-card-badge-container">
                                                     <span className="badge badge-primary">
                                                         {topic.quiz_count} quiz question{topic.quiz_count !== 1 ? 's' : ''}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, marginLeft: '1rem' }}>
+                                            <div className="topic-card-buttons">
                                                 <button
                                                     onClick={() => { setSelectedTopicId(topic.id); setShowQuizModal(true); }}
                                                     style={{
@@ -475,7 +477,7 @@ export default function AdminDashboard() {
 
             {/* AI Settings View */}
             {activeTab === 'settings' && (
-                <div className="card animate-fade-in-up" style={{ padding: '2.5rem', maxWidth: 800, margin: '0 auto' }}>
+                <div className="card card-padding animate-fade-in-up" style={{ maxWidth: 800, margin: '0 auto' }}>
                     <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span>⚙️</span> <span className="gradient-text">AI Configuration Settings</span>
                     </h2>

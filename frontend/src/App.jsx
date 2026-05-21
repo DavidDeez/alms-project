@@ -34,7 +34,7 @@ function Navbar() {
             zIndex: 100,
             padding: '0 1.5rem',
         }}>
-            <div style={{
+            <div className="navbar-inner" style={{
                 maxWidth: 1100, margin: '0 auto',
                 display: 'flex', alignItems: 'center',
                 justifyContent: 'space-between',
@@ -73,7 +73,7 @@ function Navbar() {
                 </div>
 
                 {/* User info + logout */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <div className="navbar-profile-section" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                         <div style={{
                             width: 34, height: 34,
@@ -87,10 +87,10 @@ function Navbar() {
                             {user.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                            <div className="navbar-profile-name" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
                                 {user.name}
                             </div>
-                            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
+                            <div className="navbar-profile-role" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
                                 {user.role}
                             </div>
                         </div>
