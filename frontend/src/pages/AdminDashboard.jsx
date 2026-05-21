@@ -41,6 +41,9 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [activeSubject, setActiveSubject] = useState(null);
 
+    // Tab states
+    const [activeTab, setActiveTab] = useState('content'); // 'content' or 'settings'
+
     // Modal states
     const [showSubjectModal, setShowSubjectModal] = useState(false);
     const [showTopicModal, setShowTopicModal] = useState(false);
@@ -53,6 +56,13 @@ export default function AdminDashboard() {
     const [quizForm, setQuizForm] = useState({ question: '', optA: '', optB: '', optC: '', optD: '', correct_answer: '' });
     const [saving, setSaving] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
+
+    // AI Settings states
+    const [aiStatus, setAiStatus] = useState({ configured: false, model: '', available_models: [] });
+    const [selectedModel, setSelectedModel] = useState('');
+    const [defaultQuestionCount, setDefaultQuestionCount] = useState(5);
+    const [testingConnection, setTestingConnection] = useState(false);
+    const [testResult, setTestResult] = useState(null);
 
     const headers = { Authorization: `Bearer ${token}` };
 
@@ -68,7 +78,23 @@ export default function AdminDashboard() {
         }
     };
 
-    useEffect(() => { fetchData(); }, []);
+    const fetchAIStatus = async () => {
+        try {
+            const res = await axios.get(`${API_URL}/api/admin/ai-status`, { headers });
+            setAiStatus(res.data);
+            const savedModel = localStorage.getItem('alms_ai_model');
+            const savedCount = localStorage.getItem('alms_ai_question_count');
+            setSelectedModel(savedModel || res.data.model || 'google/gemini-2.5-flash');
+            setDefaultQuestionCount(savedCount ? parseInt(savedCount) : 5);
+        } catch (err) {
+            console.error('Failed to fetch AI status:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+        fetchAIStatus();
+    }, []);
 
     const flash = (msg) => {
         setSuccessMsg(msg);
@@ -140,13 +166,43 @@ export default function AdminDashboard() {
     const handleGenerateAIQuiz = async (topicId) => {
         setGeneratingId(topicId);
         try {
-            const res = await axios.post(`${API_URL}/api/admin/topic/${topicId}/generate-quiz`, {}, { headers });
+            const currentModel = localStorage.getItem('alms_ai_model') || selectedModel || 'google/gemini-2.5-flash';
+            const currentCount = parseInt(localStorage.getItem('alms_ai_question_count')) || defaultQuestionCount || 5;
+
+            const res = await axios.post(`${API_URL}/api/admin/topic/${topicId}/generate-quiz`, {
+                model: currentModel,
+                questionCount: currentCount
+            }, { headers });
             flash(res.data.message || 'AI Quiz generated!');
             fetchData();
         } catch (err) {
             alert(err.response?.data?.error || 'Failed to generate AI Quiz. Make sure OPENROUTER_API_KEY is configured.');
         } finally {
             setGeneratingId(null);
+        }
+    };
+
+    const handleSaveAISettings = (e) => {
+        e.preventDefault();
+        localStorage.setItem('alms_ai_model', selectedModel);
+        localStorage.setItem('alms_ai_question_count', defaultQuestionCount.toString());
+        flash('AI Settings saved successfully!');
+    };
+
+    const handleTestAIConnection = async () => {
+        setTestingConnection(true);
+        setTestResult(null);
+        try {
+            const res = await axios.post(`${API_URL}/api/admin/test-ai`, { model: selectedModel }, { headers });
+            if (res.data.ok) {
+                setTestResult({ success: true, message: `Connected successfully! Response: "${res.data.message}"` });
+            } else {
+                setTestResult({ success: false, message: `Failed to connect: ${res.data.error || ''}` });
+            }
+        } catch (err) {
+            setTestResult({ success: false, message: err.response?.data?.error || err.message || 'Failed to connect.' });
+        } finally {
+            setTestingConnection(false);
         }
     };
 
@@ -227,8 +283,45 @@ export default function AdminDashboard() {
                 ))}
             </div>
 
+            {/* Tab Switcher */}
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem' }}>
+                <button
+                    onClick={() => setActiveTab('content')}
+                    style={{
+                        padding: '0.6rem 1.25rem',
+                        borderRadius: '0.75rem',
+                        border: activeTab === 'content' ? '1px solid rgba(129,140,248,0.4)' : '1px solid var(--border)',
+                        background: activeTab === 'content' ? 'rgba(129,140,248,0.1)' : 'var(--surface)',
+                        color: activeTab === 'content' ? 'var(--primary)' : 'var(--text-secondary)',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        fontSize: '0.9rem'
+                    }}
+                >
+                    📚 Content Manager
+                </button>
+                <button
+                    onClick={() => setActiveTab('settings')}
+                    style={{
+                        padding: '0.6rem 1.25rem',
+                        borderRadius: '0.75rem',
+                        border: activeTab === 'settings' ? '1px solid rgba(129,140,248,0.4)' : '1px solid var(--border)',
+                        background: activeTab === 'settings' ? 'rgba(129,140,248,0.1)' : 'var(--surface)',
+                        color: activeTab === 'settings' ? 'var(--primary)' : 'var(--text-secondary)',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        fontSize: '0.9rem'
+                    }}
+                >
+                    ⚙️ AI Settings
+                </button>
+            </div>
+
             {/* Main Content */}
-            <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '1.5rem' }}>
+            {activeTab === 'content' && (
+                <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '1.5rem' }}>
 
                 {/* Sidebar — Subjects */}
                 <div>
@@ -378,6 +471,185 @@ export default function AdminDashboard() {
                     )}
                 </div>
             </div>
+            )}
+
+            {/* AI Settings View */}
+            {activeTab === 'settings' && (
+                <div className="card animate-fade-in-up" style={{ padding: '2.5rem', maxWidth: 800, margin: '0 auto' }}>
+                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span>⚙️</span> <span className="gradient-text">AI Configuration Settings</span>
+                    </h2>
+
+                    {/* Live Status indicator */}
+                    <div style={{
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '1rem',
+                        padding: '1.25rem 1.5rem',
+                        marginBottom: '2rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '1rem'
+                    }}>
+                        <div>
+                            <h4 style={{ margin: '0 0 0.25rem', fontFamily: 'Outfit, sans-serif', fontSize: '1.05rem', fontWeight: 600 }}>OpenRouter API Connection</h4>
+                            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                                {aiStatus.configured 
+                                    ? 'Your server is configured with a valid OpenRouter API Key. You are ready to generate dynamic quizzes!' 
+                                    : 'Server-side OPENROUTER_API_KEY environment variable is missing. Set it in your backend .env file to enable AI generation.'
+                                }
+                            </p>
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            background: aiStatus.configured ? 'rgba(52, 211, 153, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+                            border: aiStatus.configured ? '1px solid rgba(52, 211, 153, 0.25)' : '1px solid rgba(248, 113, 113, 0.25)',
+                            borderRadius: '2rem',
+                            padding: '0.4rem 1rem',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            color: aiStatus.configured ? '#34d399' : '#f87171'
+                        }}>
+                            <span style={{
+                                width: 8, height: 8, borderRadius: '50%',
+                                background: aiStatus.configured ? '#34d399' : '#f87171',
+                                boxShadow: aiStatus.configured ? '0 0 8px #34d399' : '0 0 8px #f87171'
+                            }} />
+                            {aiStatus.configured ? 'Connected' : 'Offline'}
+                        </div>
+                    </div>
+
+                    {/* Configuration Form */}
+                    <form onSubmit={handleSaveAISettings} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        
+                        {/* Model Select */}
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                                Default AI Model
+                            </label>
+                            <select
+                                value={selectedModel}
+                                onChange={e => setSelectedModel(e.target.value)}
+                                className="input-field"
+                                style={{
+                                    width: '100%',
+                                    background: 'var(--bg-secondary)',
+                                    color: 'var(--text-primary)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '0.75rem',
+                                    padding: '0.75rem 1rem',
+                                    fontSize: '0.9rem',
+                                    outline: 'none',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {aiStatus.available_models && aiStatus.available_models.length > 0 ? (
+                                    aiStatus.available_models.map(m => (
+                                        <option key={m.id} value={m.id}>{m.label}</option>
+                                    ))
+                                ) : (
+                                    <>
+                                        <option value="google/gemini-2.5-flash">Gemini 2.5 Flash (Recommended)</option>
+                                        <option value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
+                                        <option value="meta-llama/llama-3.1-8b-instruct:free">LLaMA 3.1 8B (Free)</option>
+                                    </>
+                                )}
+                            </select>
+                            <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+                                Select which model OpenRouter will call to synthesize learning material into questions.
+                            </span>
+                        </div>
+
+                        {/* Question Count Select */}
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                                Questions Per Topic ({defaultQuestionCount} questions)
+                            </label>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="10"
+                                    value={defaultQuestionCount}
+                                    onChange={e => setDefaultQuestionCount(parseInt(e.target.value))}
+                                    style={{ flex: 1, accentColor: 'var(--primary)' }}
+                                />
+                                <span style={{
+                                    minWidth: '2.5rem',
+                                    textAlign: 'center',
+                                    background: 'rgba(129, 140, 248, 0.1)',
+                                    border: '1px solid rgba(129, 140, 248, 0.25)',
+                                    color: 'var(--primary)',
+                                    padding: '0.25rem 0.5rem',
+                                    borderRadius: '0.5rem',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 600
+                                }}>
+                                    {defaultQuestionCount}
+                                </span>
+                            </div>
+                            <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+                                Control how many multiple-choice questions are synthesized for each generated quiz.
+                            </span>
+                        </div>
+
+                        {/* Test Connection Button */}
+                        {aiStatus.configured && (
+                            <div style={{ marginTop: '0.5rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
+                                <button
+                                    type="button"
+                                    onClick={handleTestAIConnection}
+                                    disabled={testingConnection}
+                                    style={{
+                                        background: 'rgba(56, 189, 248, 0.12)',
+                                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                                        color: 'var(--accent)',
+                                        borderRadius: '0.75rem',
+                                        padding: '0.6rem 1.25rem',
+                                        fontSize: '0.85rem',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.2s',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem'
+                                    }}
+                                >
+                                    {testingConnection ? '⚡ Testing Connection...' : '🔌 Test AI Connection'}
+                                </button>
+                                {testResult && (
+                                    <div style={{
+                                        marginTop: '1rem',
+                                        padding: '0.75rem 1rem',
+                                        borderRadius: '0.75rem',
+                                        fontSize: '0.85rem',
+                                        border: testResult.success ? '1px solid rgba(52, 211, 153, 0.25)' : '1px solid rgba(248, 113, 113, 0.25)',
+                                        background: testResult.success ? 'rgba(52, 211, 153, 0.05)' : 'rgba(248, 113, 113, 0.05)',
+                                        color: testResult.success ? '#34d399' : '#f87171'
+                                    }}>
+                                        {testResult.success ? '✓' : '✗'} {testResult.message}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Submit Action */}
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem', marginTop: '1rem' }}>
+                            <button
+                                type="submit"
+                                className="btn-primary"
+                                style={{ padding: '0.75rem 2rem' }}
+                            >
+                                Save Configuration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
 
             {/* ── Modals ────────────────────────────────────── */}
 

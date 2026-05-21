@@ -107,10 +107,73 @@ exports.deleteTopic = async (req, res) => {
     }
 };
 
+// GET /api/admin/ai-status — Returns AI configuration status
+exports.getAIStatus = (req, res) => {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    const model = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+    res.json({
+        configured: !!apiKey,
+        model: model,
+        available_models: [
+            { id: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash (Recommended)' },
+            { id: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash' },
+            { id: 'meta-llama/llama-3.1-8b-instruct:free', label: 'LLaMA 3.1 8B (Free)' },
+            { id: 'meta-llama/llama-3.3-70b-instruct', label: 'LLaMA 3.3 70B' },
+            { id: 'mistralai/mistral-7b-instruct:free', label: 'Mistral 7B (Free)' },
+            { id: 'openai/gpt-4o-mini', label: 'GPT-4o Mini' },
+            { id: 'anthropic/claude-3-haiku', label: 'Claude 3 Haiku' },
+        ]
+    });
+};
+
+// POST /api/admin/test-ai — Test the AI Connection
+exports.testAIConnection = async (req, res) => {
+    try {
+        const apiKey = process.env.OPENROUTER_API_KEY;
+        if (!apiKey) {
+            return res.status(400).json({ configured: false, error: 'OpenRouter API Key (OPENROUTER_API_KEY) is not set on the server!' });
+        }
+
+        const model = req.body.model || process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+        const fetchFn = globalThis.fetch;
+        
+        const response = await fetchFn('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': 'https://alms-project.onrender.com',
+                'X-Title': 'GradeGuide'
+            },
+            body: JSON.stringify({
+                model,
+                messages: [{ role: 'user', content: 'Respond with the word "Connected" and nothing else.' }],
+                max_tokens: 10
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            return res.status(response.status).json({ configured: true, ok: false, error: errText });
+        }
+
+        const responseData = await response.json();
+        const messageContent = responseData.choices?.[0]?.message?.content?.trim();
+
+        res.json({ configured: true, ok: true, message: messageContent || 'Connected' });
+    } catch (error) {
+        console.error('AI test connection error:', error);
+        res.status(500).json({ error: 'Connection failed: ' + error.message });
+    }
+};
+
 // POST /api/admin/topic/:id/generate-quiz — AI generation via OpenRouter
 exports.generateQuiz = async (req, res) => {
     try {
         const { id: topicId } = req.params;
+        // Allow frontend to override model and question count
+        const modelOverride = req.body.model;
+        const questionCount = parseInt(req.body.questionCount) || 5;
 
         // 1. Get topic details
         const topicResult = await db.query('SELECT title, content FROM Topics WHERE id = $1', [topicId]);
@@ -125,19 +188,19 @@ exports.generateQuiz = async (req, res) => {
             return res.status(500).json({ error: 'OpenRouter API Key (OPENROUTER_API_KEY) is not set on the server!' });
         }
 
-        const model = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
-        console.log(`Generating quiz for topic: ${topic.title} using model: ${model}`);
+        const model = modelOverride || process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+        console.log(`Generating ${questionCount} quiz questions for: "${topic.title}" using model: ${model}`);
 
-        const systemPrompt = `You are an expert educator. Generate 5 multiple-choice questions for the following lesson content. 
+        const systemPrompt = `You are an expert educator for Nigerian secondary school students. Generate ${questionCount} multiple-choice questions for the following lesson content.
 Return the output ONLY as a valid JSON array. Each object in the array MUST have the exact keys: "question", "options", and "correct_answer".
-"options" must be an array of exactly 4 strings. 
+"options" must be an array of exactly 4 strings.
 "correct_answer" must be a string that matches exactly one of the options.
+Make questions clear, age-appropriate, and progressively challenging.
 Do not include any markdown format tags like \`\`\`json or explanations. Only return raw JSON.`;
 
-        const userPrompt = `Topic Title: ${topic.title}
-Lesson Content: ${topic.content || 'Introduce the topic and test general knowledge about it.'}`;
+        const userPrompt = `Topic Title: ${topic.title}\nLesson Content: ${topic.content || 'Introduce the topic and test general knowledge about it.'}`;
 
-        const fetchFn = globalThis.fetch || require('node-fetch'); // Fallback just in case
+        const fetchFn = globalThis.fetch;
         const response = await fetchFn('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -147,7 +210,7 @@ Lesson Content: ${topic.content || 'Introduce the topic and test general knowled
                 'X-Title': 'GradeGuide'
             },
             body: JSON.stringify({
-                model: model,
+                model,
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userPrompt }
@@ -162,15 +225,13 @@ Lesson Content: ${topic.content || 'Introduce the topic and test general knowled
 
         const responseData = await response.json();
         const content = responseData.choices?.[0]?.message?.content;
-        
-        if (!content) {
-            throw new Error('Empty response from OpenRouter API');
-        }
 
-        // Parse JSON output
+        if (!content) throw new Error('Empty response from OpenRouter API');
+
+        // Strip markdown fences if model returned them anyway
         let cleanContent = content.trim();
         if (cleanContent.startsWith('```')) {
-            cleanContent = cleanContent.replace(/^```json\s*/i, '').replace(/```$/, '').trim();
+            cleanContent = cleanContent.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
         }
 
         let questions;
@@ -181,21 +242,17 @@ Lesson Content: ${topic.content || 'Introduce the topic and test general knowled
             throw new Error('Generated quiz content is not valid JSON: ' + e.message);
         }
 
-        if (!Array.isArray(questions)) {
-            throw new Error('Generated quiz is not an array');
-        }
+        if (!Array.isArray(questions)) throw new Error('Generated quiz is not an array');
 
         // 3. Insert generated quizzes into database
         for (const q of questions) {
-            const opts = q.options || [];
-            const correctAns = q.correct_answer || '';
             await db.query(
                 'INSERT INTO Quizzes (topic_id, question, options, correct_answer) VALUES ($1, $2, $3, $4)',
-                [topicId, q.question, JSON.stringify(opts), correctAns]
+                [topicId, q.question, JSON.stringify(q.options || []), q.correct_answer || '']
             );
         }
 
-        res.json({ message: 'AI Quiz generated successfully!', count: questions.length });
+        res.json({ message: `${questions.length} AI quiz questions generated successfully!`, count: questions.length, model });
 
     } catch (error) {
         console.error('AI Quiz generation error:', error);

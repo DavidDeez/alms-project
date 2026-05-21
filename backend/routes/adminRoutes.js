@@ -7,6 +7,8 @@ const { protect, isTeacher } = require('../middleware/authMiddleware');
 router.use(protect, isTeacher);
 
 router.get('/dashboard', adminController.getAdminDashboard);
+router.get('/ai-status', adminController.getAIStatus);
+router.post('/test-ai', adminController.testAIConnection);
 router.post('/subject', adminController.createSubject);
 router.post('/topic', adminController.createTopic);
 router.post('/topic/:id/quiz', adminController.createQuizQuestion);
