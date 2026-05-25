@@ -143,7 +143,7 @@ exports.testAIConnection = async (req, res) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`,
                 'HTTP-Referer': 'https://alms-project.onrender.com',
-                'X-Title': 'GradeGuide'
+                'X-Title': 'LearnSync ALMS'
             },
             body: JSON.stringify({
                 model,
@@ -207,7 +207,7 @@ Do not include any markdown format tags like \`\`\`json or explanations. Only re
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`,
                 'HTTP-Referer': 'https://alms-project.onrender.com',
-                'X-Title': 'GradeGuide'
+                'X-Title': 'LearnSync ALMS'
             },
             body: JSON.stringify({
                 model,

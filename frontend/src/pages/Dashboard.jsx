@@ -191,7 +191,7 @@ export default function Dashboard() {
                     </h2>
                     
                     <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.95rem', lineHeight: 1.6, margin: '0 0 1.5rem' }}>
-                        We couldn't connect to the GradeGuide ALMS backend server. 
+                        We couldn't connect to the LearnSync ALMS backend server. 
                     </p>
 
                     {/* Diagnostics Panel */}

@@ -61,7 +61,7 @@ function Navbar() {
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text'
-                    }}>GradeGuide</span>
+                    }}>LearnSync</span>
                 </Link>
 
                 {/* Nav links */}

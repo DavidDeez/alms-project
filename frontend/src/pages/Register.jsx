@@ -60,7 +60,7 @@ export default function Register() {
                         letterSpacing: '-0.03em',
                         margin: '0 0 0.75rem', lineHeight: 1.1
                     }}>
-                        <span className="gradient-text">Join GradeGuide</span>
+                        <span className="gradient-text">Join LearnSync ALMS</span>
                     </h1>
 
                     <p style={{

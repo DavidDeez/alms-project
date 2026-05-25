@@ -67,7 +67,7 @@ export default function Login() {
                         margin: '0 0 0.75rem',
                         lineHeight: 1.1
                     }}>
-                        <span className="gradient-text">GradeGuide</span>
+                        <span className="gradient-text">LearnSync</span>
                         <br />
                         <span style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 600 }}>ALMS</span>
                     </h1>

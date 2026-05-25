@@ -1,6 +1,6 @@
-# GradeGuide — Adaptive Learning Management System (ALMS)
+# LearnSync — Adaptive Learning Management System (ALMS)
 
-GradeGuide is a next-generation, premium Adaptive Learning Management System (ALMS) built using a modern full-stack architecture. It adapts to student performance, providing automated revision suggestions and unlocking content dynamically, while offering teachers a comprehensive panel with AI-powered quiz generation.
+LearnSync is a next-generation, premium Adaptive Learning Management System (ALMS) built using a modern full-stack architecture. It adapts to student performance, providing automated revision suggestions and unlocking content dynamically, while offering teachers a comprehensive panel with AI-powered quiz generation.
 
 ## ✨ Features
 
