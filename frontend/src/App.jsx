@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
@@ -107,6 +108,27 @@ function Navbar() {
 }
 
 function AppRoutes() {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    console.log('Session invalid or expired. Auto-logging out...');
+                    logout();
+                    navigate('/login', { state: { message: 'Your session has expired. Please sign in again.' } });
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            axios.interceptors.response.eject(interceptor);
+        };
+    }, [logout, navigate]);
+
     return (
         <>
             <Navbar />

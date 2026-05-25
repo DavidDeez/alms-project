@@ -134,8 +134,12 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
+        if (user && user.role === 'teacher') {
+            navigate('/admin');
+            return;
+        }
         fetchDashboardData();
-    }, [token]);
+    }, [token, user]);
 
     const handleRetry = () => {
         setIsRetrying(true);
