@@ -110,17 +110,42 @@ function TopicCard({ topic, onStart, index }) {
 
 export default function Dashboard() {
     const navigate = useNavigate();
-    const { token, user } = useAuth();
+    const { token, user, logout } = useAuth();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isRetrying, setIsRetrying] = useState(false);
+    const [fetchError, setFetchError] = useState(null);
+
+    const fetchDashboardData = async () => {
+        setLoading(true);
+        setFetchError(null);
+        try {
+            const res = await axios.get(`${API_URL}/api/courses/dashboard`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setData(res.data);
+        } catch (err) {
+            console.error('Error fetching dashboard:', err);
+            setFetchError(err);
+        } finally {
+            setLoading(false);
+            setIsRetrying(false);
+        }
+    };
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/courses/dashboard`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(res => { setData(res.data); setLoading(false); })
-        .catch(err => { console.error(err); setLoading(false); });
+        fetchDashboardData();
     }, [token]);
+
+    const handleRetry = () => {
+        setIsRetrying(true);
+        fetchDashboardData();
+    };
+
+    const handleSignOut = () => {
+        logout();
+        navigate('/login');
+    };
 
     if (loading) {
         return (
@@ -136,15 +161,110 @@ export default function Dashboard() {
                 <div className="topics-grid">
                     {[1,2].map(i => <div key={i} className="skeleton" style={{ height: 200, borderRadius: '1.25rem' }} />)}
                 </div>
+                {isRetrying && (
+                    <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '1rem' }}>
+                        Connecting to backend... Please wait...
+                    </p>
+                )}
             </div>
         );
     }
 
     if (!data) {
+        const isLiveFrontEnd = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const isLocalBackend = API_URL.includes('localhost') || API_URL.includes('127.0.0.1');
+
         return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ fontSize: '3rem' }}>⚡</div>
-                <p style={{ color: 'var(--danger)' }}>Failed to load dashboard. Make sure the backend is running.</p>
+            <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', fontFamily: 'Inter, sans-serif' }}>
+                <div className="card animate-fade-in-up" style={{ maxWidth: 600, width: '100%', padding: '2.5rem', border: '1px solid rgba(248, 113, 113, 0.25)', background: 'rgba(20, 10, 10, 0.45)', backdropFilter: 'blur(12px)', position: 'relative' }}>
+                    
+                    <div style={{ position: 'absolute', top: -30, left: 'calc(50% - 30px)', width: 60, height: 60, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', boxShadow: '0 4px 20px rgba(239,68,68,0.2)' }}>
+                        ⚠️
+                    </div>
+
+                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 800, textAlign: 'center', marginTop: '1rem', marginBottom: '0.75rem', color: '#f87171' }}>
+                        Connection Error
+                    </h2>
+                    
+                    <p style={{ color: 'var(--text-secondary)', textAlign: 'center', fontSize: '0.95rem', lineHeight: 1.6, margin: '0 0 1.5rem' }}>
+                        We couldn't connect to the GradeGuide ALMS backend server. 
+                    </p>
+
+                    {/* Diagnostics Panel */}
+                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Attempted Endpoint:</span>
+                            <code style={{ color: '#818cf8', fontWeight: 'bold' }}>{API_URL}</code>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Your Hostname:</span>
+                            <code style={{ color: '#38bdf8' }}>{window.location.hostname}</code>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Error Code:</span>
+                            <span style={{ color: '#f87171' }}>{fetchError?.code || fetchError?.message || 'Network Error'}</span>
+                        </div>
+                    </div>
+
+                    {/* Scenario Guidelines */}
+                    {isLiveFrontEnd && isLocalBackend ? (
+                        /* Case 1: Live site querying localhost */
+                        <div style={{ background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.25)', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.75rem' }}>
+                            <h4 style={{ margin: '0 0 0.5rem', color: '#818cf8', fontSize: '0.9rem', fontWeight: 700 }}>⚙️ Missing Environment Variable</h4>
+                            <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.85rem', lineHeight: 1.5 }}>
+                                Your live site is attempting to connect to a local server (<code>http://localhost:5000</code>). In your Render Dashboard under the <strong>Front-end Static Site settings</strong>:
+                            </p>
+                            <ol style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: '0.5rem 0 0', paddingLeft: '1.25rem', lineHeight: 1.5 }}>
+                                <li>Navigate to **Environment** tab.</li>
+                                <li>Add variable: <code style={{ color: 'white' }}>VITE_API_URL</code>.</li>
+                                <li>Set the value to your **deployed backend API URL** (e.g. <code>https://alms-backend.onrender.com</code>).</li>
+                                <li>Click **Save Changes** and trigger a **Clear cache and deploy** build.</li>
+                            </ol>
+                        </div>
+                    ) : (
+                        /* Case 2: Render Free Tier backend sleep */
+                        <div style={{ background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.75rem' }}>
+                            <h4 style={{ margin: '0 0 0.5rem', color: '#38bdf8', fontSize: '0.9rem', fontWeight: 700 }}>⏳ Render Free Tier Startup Delay</h4>
+                            <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.85rem', lineHeight: 1.5 }}>
+                                On Render's free tier, the backend web service spins down automatically after 15 minutes of inactivity. When you visit after a break:
+                            </p>
+                            <ul style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: '0.5rem 0 0', paddingLeft: '1.25rem', lineHeight: 1.5 }}>
+                                <li>The server can take **50 seconds or more** to wake up.</li>
+                                <li>During this time, requests will temporarily fail or time out.</li>
+                                <li>Please wait about 30 seconds and click **Retry Connection** below.</li>
+                            </ul>
+                        </div>
+                    )}
+
+                    {/* Actions */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        <button 
+                            onClick={handleRetry} 
+                            className="btn-primary" 
+                            style={{ width: '100%', padding: '0.9rem', fontSize: '0.95rem', fontWeight: 700, background: 'linear-gradient(135deg, #6366f1, #818cf8)', boxShadow: '0 4px 15px rgba(99,102,241,0.3)' }}
+                        >
+                            🔄 Retry Connection
+                        </button>
+                        
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button 
+                                onClick={handleSignOut} 
+                                className="btn-ghost" 
+                                style={{ flex: 1, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderColor: 'var(--border)' }}
+                            >
+                                🚪 Sign Out / Reset Session
+                            </button>
+                            <button 
+                                onClick={() => window.open(`${API_URL}/api/debug`, '_blank')} 
+                                className="btn-ghost" 
+                                style={{ flex: 1, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderColor: 'var(--border)' }}
+                            >
+                                🔍 Test API URL directly
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         );
     }

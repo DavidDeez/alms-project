@@ -6,6 +6,24 @@ const courseRoutes = require('./routes/courseRoutes');
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const setupDatabase = require('./scripts/setupDb');
+const db = require('./config/db');
+
+// Auto-initialize database tables if they do not exist
+const autoInitializeDatabase = async () => {
+    try {
+        await db.query('SELECT 1 FROM Users LIMIT 1');
+        console.log('Database tables verified.');
+    } catch (err) {
+        console.log('Database tables not found. Auto-initializing and seeding database...');
+        try {
+            await setupDatabase();
+            console.log('Database auto-initialization and seeding complete.');
+        } catch (setupErr) {
+            console.error('Failed to auto-initialize database:', setupErr);
+        }
+    }
+};
+autoInitializeDatabase();
 
 const app = express();
 app.use(cors());
