@@ -251,6 +251,24 @@ export default function AdminDashboard() {
     return (
         <div className="page-container" style={{ maxWidth: 1100, fontFamily: 'Inter, sans-serif' }}>
             <style>{`
+                /* ── Page container: never overflow on mobile ── */
+                .tp-page { overflow-x: hidden; }
+
+                /* ── Teacher stats grid: compact 3-col on mobile ── */
+                .tp-stats-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 1rem;
+                    margin-bottom: 2.5rem;
+                }
+                .tp-stat-card {
+                    padding: 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+
+                /* ── Tab bar: scrollable pills ── */
                 .tp-tab-bar {
                     display: flex;
                     gap: 0.75rem;
@@ -264,6 +282,7 @@ export default function AdminDashboard() {
                 .tp-tab-bar::-webkit-scrollbar { display: none; }
                 .tp-tab-bar button { flex-shrink: 0; white-space: nowrap; }
 
+                /* ── Subject section header ── */
                 .tp-subject-header {
                     display: flex;
                     justify-content: space-between;
@@ -271,6 +290,11 @@ export default function AdminDashboard() {
                     margin-bottom: 1rem;
                 }
 
+                /* ── Desktop: full sidebar list ── */
+                .tp-subject-dropdown { display: none; }
+                .tp-subject-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+                /* ── Topic header: title + add button ── */
                 .tp-topic-header {
                     display: flex;
                     justify-content: space-between;
@@ -279,11 +303,10 @@ export default function AdminDashboard() {
                     gap: 0.75rem;
                 }
 
-                .tp-ai-card {
-                    max-width: 800px;
-                    margin: 0 auto;
-                }
+                /* ── AI Settings card ── */
+                .tp-ai-card { max-width: 800px; margin: 0 auto; }
 
+                /* ── AI status bar ── */
                 .tp-ai-status {
                     display: flex;
                     align-items: center;
@@ -297,6 +320,7 @@ export default function AdminDashboard() {
                     margin-bottom: 2rem;
                 }
 
+                /* ── Save button row ── */
                 .tp-save-row {
                     display: flex;
                     justify-content: flex-end;
@@ -306,6 +330,7 @@ export default function AdminDashboard() {
                     margin-top: 1rem;
                 }
 
+                /* ── Topic action buttons ── */
                 .tp-topic-buttons {
                     display: flex;
                     gap: 0.5rem;
@@ -314,6 +339,7 @@ export default function AdminDashboard() {
                     flex-wrap: nowrap;
                 }
 
+                /* ── Modal scroll ── */
                 .tp-modal-body {
                     display: flex;
                     flex-direction: column;
@@ -322,20 +348,64 @@ export default function AdminDashboard() {
                     overflow-y: auto;
                 }
 
+                /* ════════════════════════════════════════
+                   MOBILE  ≤ 640px
+                   ════════════════════════════════════════ */
                 @media (max-width: 640px) {
-                    .tp-ai-card { margin: 0; }
 
-                    .tp-ai-status { flex-direction: column; align-items: flex-start; }
-
-                    .tp-save-row {
+                    /* Stats: compact 3-col */
+                    .tp-stats-grid {
+                        gap: 0.5rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    .tp-stat-card {
+                        padding: 0.75rem;
                         flex-direction: column;
-                        align-items: stretch;
+                        align-items: center;
+                        text-align: center;
+                        gap: 0.4rem;
                     }
-                    .tp-save-row button {
-                        width: 100% !important;
-                        justify-content: center;
+                    .tp-stat-card .tp-stat-icon {
+                        width: 36px !important;
+                        height: 36px !important;
+                        font-size: 1rem !important;
+                        border-radius: 0.5rem !important;
+                    }
+                    .tp-stat-card .tp-stat-num  { font-size: 1.3rem !important; }
+                    .tp-stat-card .tp-stat-lbl  { font-size: 0.62rem !important; }
+
+                    /* Tab bar: smaller pills */
+                    .tp-tab-bar button { padding: 0.5rem 0.9rem !important; font-size: 0.82rem; }
+
+                    /* Subject sidebar → hidden, replaced by dropdown */
+                    .tp-subject-list { display: none !important; }
+                    .tp-subject-dropdown {
+                        display: block;
+                        width: 100%;
+                        margin-bottom: 1.25rem;
+                        background: var(--surface);
+                        border: 1px solid var(--border);
+                        color: var(--text-primary);
+                        padding: 0.75rem 1rem;
+                        border-radius: 0.875rem;
+                        font-family: 'Inter', sans-serif;
+                        font-size: 0.9rem;
+                        font-weight: 500;
+                        cursor: pointer;
+                        outline: none;
+                        appearance: none;
+                        -webkit-appearance: none;
+                        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23818cf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                        background-repeat: no-repeat;
+                        background-position: right 0.875rem center;
+                        padding-right: 2.5rem;
+                    }
+                    .tp-subject-dropdown:focus {
+                        border-color: var(--primary);
+                        box-shadow: 0 0 0 3px rgba(129,140,248,0.15);
                     }
 
+                    /* Topic header stack */
                     .tp-topic-header {
                         flex-direction: column;
                         align-items: stretch;
@@ -345,6 +415,7 @@ export default function AdminDashboard() {
                         justify-content: center;
                     }
 
+                    /* Topic buttons: 2-col grid */
                     .tp-topic-buttons {
                         display: grid !important;
                         grid-template-columns: 1fr 1fr;
@@ -356,11 +427,17 @@ export default function AdminDashboard() {
                         grid-column: 1 / -1;
                     }
 
-                    .tp-subject-header button { font-size: 0.78rem; }
-                }
-
-                @media (max-width: 400px) {
-                    .tp-tab-bar button { padding: 0.5rem 0.8rem !important; font-size: 0.78rem; }
+                    /* AI settings */
+                    .tp-ai-card { margin: 0; }
+                    .tp-ai-status { flex-direction: column; align-items: flex-start; }
+                    .tp-save-row {
+                        flex-direction: column;
+                        align-items: stretch;
+                    }
+                    .tp-save-row button {
+                        width: 100% !important;
+                        justify-content: center;
+                    }
                 }
             `}</style>
 
@@ -389,15 +466,15 @@ export default function AdminDashboard() {
             </div>
 
             {/* Stats Row */}
-            <div className="stats-grid">
+            <div className="tp-stats-grid">
                 {[
-                    { label: 'Total Subjects', value: data?.subjects.length ?? 0, icon: <Library size={24} color="#818cf8" />, color: '#818cf8' },
-                    { label: 'Total Topics', value: data?.subjects.reduce((acc, s) => acc + s.topics.length, 0) ?? 0, icon: <BookOpen size={24} color="#38bdf8" />, color: '#38bdf8' },
-                    { label: 'Enrolled Students', value: data?.studentCount ?? 0, icon: <GraduationCap size={24} color="#34d399" />, color: '#34d399' },
+                    { label: 'Total Subjects', value: data?.subjects.length ?? 0, icon: <Library size={20} color="#818cf8" />, color: '#818cf8' },
+                    { label: 'Total Topics', value: data?.subjects.reduce((acc, s) => acc + s.topics.length, 0) ?? 0, icon: <BookOpen size={20} color="#38bdf8" />, color: '#38bdf8' },
+                    { label: 'Enrolled Students', value: data?.studentCount ?? 0, icon: <GraduationCap size={20} color="#34d399" />, color: '#34d399' },
                 ].map((stat) => (
-                    <div key={stat.label} className="card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div style={{
-                            width: 52, height: 52, borderRadius: '1rem',
+                    <div key={stat.label} className="card tp-stat-card">
+                        <div className="tp-stat-icon" style={{
+                            width: 48, height: 48, borderRadius: '0.875rem',
                             background: `${stat.color}18`,
                             border: `1px solid ${stat.color}30`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -406,8 +483,8 @@ export default function AdminDashboard() {
                             {stat.icon}
                         </div>
                         <div>
-                            <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2rem', fontWeight: 800, color: stat.color, lineHeight: 1 }}>{stat.value}</div>
-                            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>{stat.label}</div>
+                            <div className="tp-stat-num" style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2rem', fontWeight: 800, color: stat.color, lineHeight: 1 }}>{stat.value}</div>
+                            <div className="tp-stat-lbl" style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.25rem' }}>{stat.label}</div>
                         </div>
                     </div>
                 ))}
@@ -464,7 +541,22 @@ export default function AdminDashboard() {
                         }}>+ Add</button>
                     </div>
 
-                    <div className="subject-sidebar-list">
+                    {/* Mobile: dropdown selector */}
+                    <select
+                        className="tp-subject-dropdown"
+                        value={activeSubject ?? ''}
+                        onChange={e => setActiveSubject(Number(e.target.value))}
+                    >
+                        <option value="" disabled>— Select a subject —</option>
+                        {data?.subjects.map(subject => (
+                            <option key={subject.id} value={subject.id}>
+                                {subject.name} ({subject.topics.length} topic{subject.topics.length !== 1 ? 's' : ''})
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Desktop: vertical list */}
+                    <div className="tp-subject-list">
                         {data?.subjects.map(subject => (
                             <button
                                 key={subject.id}
