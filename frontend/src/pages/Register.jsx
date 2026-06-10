@@ -60,10 +60,14 @@ export default function Register() {
                     </h1>
 
                     <p style={{
-                        color: 'var(--text-secondary)', fontSize: '0.95rem',
-                        lineHeight: 1.7, marginBottom: '2rem'
+                        fontFamily: 'Outfit, sans-serif',
+                        fontWeight: 300,
+                        fontSize: '1.1rem',
+                        lineHeight: 1.6,
+                        color: '#cbd5e1',
+                        marginBottom: '2rem'
                     }}>
-                        Start your adaptive learning journey today. Smart recommendations tailored to your performance.
+                        Master topics at your own pace with intelligent guidance.
                     </p>
 
                     <div style={{

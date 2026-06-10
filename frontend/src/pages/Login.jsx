@@ -66,12 +66,14 @@ export default function Login() {
                     </h1>
 
                     <p style={{
-                        color: 'var(--text-secondary)',
-                        fontSize: '1rem',
-                        lineHeight: 1.7,
+                        fontFamily: 'Outfit, sans-serif',
+                        fontWeight: 300,
+                        fontSize: '1.1rem',
+                        lineHeight: 1.6,
+                        color: '#cbd5e1',
                         marginBottom: '2rem'
                     }}>
-                        Your personalized adaptive learning platform. Master topics at your own pace with intelligent guidance.
+                        Master topics at your own pace with intelligent guidance.
                     </p>
 
                     {/* Feature chips */}
