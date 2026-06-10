@@ -34,10 +34,10 @@ function Navbar() {
             position: 'sticky',
             top: 0,
             zIndex: 100,
-            padding: '0 1.5rem',
         }}>
             <div className="navbar-inner" style={{
                 maxWidth: 1100, margin: '0 auto',
+                padding: '0 1.5rem',
                 display: 'flex', alignItems: 'center',
                 justifyContent: 'space-between',
                 height: 64
