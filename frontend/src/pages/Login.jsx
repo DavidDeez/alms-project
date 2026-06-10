@@ -60,7 +60,7 @@ export default function Login() {
                         margin: '0 0 0.5rem',
                         lineHeight: 1.1
                     }}>
-                        <span className="glass-luminous-3d">LearnSync ALMS</span>
+                        <span className="crt-text-luminous">LearnSync ALMS</span>
                     </h1>
 
                     <p style={{
@@ -71,7 +71,7 @@ export default function Login() {
                         color: '#cbd5e1',
                         marginBottom: '2rem'
                     }}>
-                        ᴍᴀꜱᴛᴇʀ ᴛᴏᴘɪᴄꜱ ᴀᴛ ʏᴏᴜʀ ᴏᴡɴ ᴘᴀᴄᴇ ᴡɪᴛʜ ɪɴᴛᴇʟʟɪɢᴇɴᴛ ɢᴜɪᴅᴀɴᴄᴇ.
+                        ᴍᴀꜱᴛᴇʀ ᴛᴏᴘɪᴄꜱ ᴀᴛ ʏᴏᴜʀ ᴏᴡɴ ᴘᴀᴄᴇ ᴡɪᴛʜ ɪɴᴛᴇʟʟɪɢᴇɴᴛ ɢᴜɪᴅᴀɴᴄᴇ
                     </p>
 
                     {/* Feature chips */}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Calendar, Check, BookOpen, Lock, GraduationCap, Search, Target, Lightbulb, Video, ChevronDown, Plus } from 'lucide-react';
+import { Calendar, Check, BookOpen, Lock, GraduationCap, Search, Target, Lightbulb, Video, ChevronDown, Plus, X } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -334,9 +334,27 @@ export default function Curriculum() {
                                             ) : (
                                                 <>
                                                     {/* Unseeded syllabus topic resource option */}
-                                                            <span className="badge" style={{ background: 'rgba(255,255,255,0.03)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                                                            <button
+                                                                onClick={() => openMediaAssistant(item.topic)}
+                                                                className="badge"
+                                                                style={{ 
+                                                                    background: 'rgba(255,255,255,0.03)', 
+                                                                    color: 'var(--text-muted)', 
+                                                                    border: '1px solid var(--border)',
+                                                                    cursor: 'pointer',
+                                                                    transition: 'all 0.2s ease'
+                                                                }}
+                                                                onMouseEnter={e => {
+                                                                    e.currentTarget.style.borderColor = 'rgba(56,189,248,0.5)';
+                                                                    e.currentTarget.style.color = '#38bdf8';
+                                                                }}
+                                                                onMouseLeave={e => {
+                                                                    e.currentTarget.style.borderColor = 'var(--border)';
+                                                                    e.currentTarget.style.color = 'var(--text-muted)';
+                                                                }}
+                                                            >
                                                                 Syllabus Resource
-                                                            </span>
+                                                            </button>
 
                                                             {user.role === 'teacher' ? (
                                                                 <Link
@@ -440,7 +458,9 @@ export default function Curriculum() {
                         width: '100%', maxWidth: 680,
                         padding: '1.75rem',
                         position: 'relative',
-                        boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                        background: 'var(--bg-secondary)',
+                        border: '1px solid var(--border)'
                     }}>
                         {/* Close button */}
                         <button

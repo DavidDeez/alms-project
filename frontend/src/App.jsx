@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { GraduationCap } from 'lucide-react';
 import axios from 'axios';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -44,23 +45,17 @@ function Navbar() {
             }}>
                 {/* Logo */}
                 <Link to={user.role === 'teacher' ? '/admin' : '/'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                    <div style={{
-                        width: 36, height: 36,
-                        background: 'linear-gradient(135deg, #6366f1, #38bdf8)',
-                        borderRadius: '0.625rem',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '1.1rem',
-                        boxShadow: '0 4px 12px rgba(99,102,241,0.4)'
-                    }}>🎓</div>
-                    <span style={{
+                    <div className="logo-container-3d" style={{
+                        width: 32, height: 32,
+                        borderRadius: '0.5rem',
+                        margin: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                        <GraduationCap size={16} color="white" />
+                    </div>
+                    <span className="glass-luminous-3d" style={{
                         fontFamily: 'Outfit, sans-serif',
-                        fontWeight: 800,
-                        fontSize: '1.2rem',
-                        letterSpacing: '-0.02em',
-                        background: 'linear-gradient(135deg, #818cf8, #38bdf8)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text'
+                        fontSize: '1.2rem'
                     }}>LearnSync</span>
                 </Link>
 

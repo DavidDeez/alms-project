@@ -281,6 +281,41 @@ h1, h2, h3, h4, h5, h6 {
     100% { background-position: 200% 0; }
 }
 
+@keyframes float-text {
+    0% {
+        transform: translateY(0px) rotateX(4deg) rotateY(-4deg) translateZ(10px);
+    }
+    50% {
+        transform: translateY(-4px) rotateX(-4deg) rotateY(4deg) translateZ(15px);
+    }
+    100% {
+        transform: translateY(0px) rotateX(4deg) rotateY(-4deg) translateZ(10px);
+    }
+}
+
+@keyframes crt-flicker {
+    0% { opacity: 0.97; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
+}
+
+.crt-text-luminous {
+    display: inline-block;
+    color: #ffffff;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    transform-style: preserve-3d;
+    perspective: 500px;
+    animation: float-text 4s ease-in-out infinite, crt-flicker 0.15s infinite;
+    text-shadow: 
+        -2px 0 0 rgba(255, 0, 80, 0.6), /* red split */
+        2px 0 0 rgba(0, 255, 240, 0.6),  /* cyan split */
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(129, 140, 248, 0.8),
+        0 0 30px rgba(56, 189, 248, 0.5);
+    position: relative;
+}
+
 .animate-fade-in-up {
     animation: fadeInUp 0.6s ease forwards;
 }
@@ -555,11 +590,11 @@ h1, h2, h3, h4, h5, h6 {
         width: 100%;
         padding: 2.25rem 1.5rem 1.5rem;
         border-right: none;
-        border-bottom: 1px solid var(--border);
+        border-bottom: none !important;
         justify-content: center;
         align-items: center;
         text-align: center;
-        background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(56,189,248,0.04) 100%);
+        background: transparent !important;
     }
 
     /* Hide background decorative orbs and specific instructional cards on mobile */
