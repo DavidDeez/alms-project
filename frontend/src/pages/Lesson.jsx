@@ -5,15 +5,6 @@ import { useAuth } from '../context/AuthContext';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const getVideoUrl = (title) => {
-    if (!title) return null;
-    const t = title.toLowerCase();
-    if (t.includes('algebra')) return 'https://www.youtube.com/embed/NybHckSEQBI';
-    if (t.includes('linear')) return 'https://www.youtube.com/embed/L71r6N81y1s';
-    if (t.includes('photo')) return 'https://www.youtube.com/embed/CMiPYHNNg28';
-    if (t.includes('cellular') || t.includes('respiration')) return 'https://www.youtube.com/embed/SrP5930gV_8';
-    return null;
-};
 
 export default function Lesson() {
     const { topicId } = useParams();
@@ -148,24 +139,31 @@ export default function Lesson() {
             </div>
 
             {/* Video Lesson */}
-            <div className="card animate-fade-in-up" style={{
-                padding: '1.75rem',
-                marginBottom: '2rem',
-                animationDelay: '0.2s', animationFillMode: 'both'
-            }}>
-                <h2 style={{
-                    fontFamily: 'Outfit, sans-serif',
-                    fontSize: '1.1rem', fontWeight: 700,
-                    color: 'var(--text-secondary)',
-                    margin: '0 0 1rem',
-                    textTransform: 'uppercase', letterSpacing: '0.05em'
+            {(topic.youtube_url) ? (
+                <div className="card animate-fade-in-up" style={{
+                    padding: '1.75rem',
+                    marginBottom: '2rem',
+                    animationDelay: '0.2s', animationFillMode: 'both'
                 }}>
-                    🎬 Video Lesson
-                </h2>
-                {getVideoUrl(topic.title) ? (
+                    <h2 style={{
+                        fontFamily: 'Outfit, sans-serif',
+                        fontSize: '1.1rem', fontWeight: 700,
+                        color: 'var(--text-secondary)',
+                        margin: '0 0 1rem',
+                        textTransform: 'uppercase', letterSpacing: '0.05em',
+                        display: 'flex', alignItems: 'center', gap: '0.5rem'
+                    }}>
+                        <span style={{
+                            width: 24, height: 24, background: '#ff0000',
+                            borderRadius: '5px', display: 'inline-flex',
+                            alignItems: 'center', justifyContent: 'center',
+                            fontSize: '0.7rem', flexShrink: 0
+                        }}>▶</span>
+                        Video Lesson
+                    </h2>
                     <div style={{
                         position: 'relative',
-                        paddingBottom: '56.25%', // 16:9 Aspect Ratio
+                        paddingBottom: '56.25%',
                         height: 0,
                         overflow: 'hidden',
                         borderRadius: '1rem',
@@ -173,7 +171,7 @@ export default function Lesson() {
                         boxShadow: '0 12px 32px rgba(0,0,0,0.5)'
                     }}>
                         <iframe
-                            src={getVideoUrl(topic.title)}
+                            src={topic.youtube_url}
                             title={topic.title}
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -185,7 +183,22 @@ export default function Lesson() {
                             }}
                         />
                     </div>
-                ) : (
+                </div>
+            ) : (
+                <div className="card animate-fade-in-up" style={{
+                    padding: '1.75rem',
+                    marginBottom: '2rem',
+                    animationDelay: '0.2s', animationFillMode: 'both'
+                }}>
+                    <h2 style={{
+                        fontFamily: 'Outfit, sans-serif',
+                        fontSize: '1.1rem', fontWeight: 700,
+                        color: 'var(--text-secondary)',
+                        margin: '0 0 1rem',
+                        textTransform: 'uppercase', letterSpacing: '0.05em'
+                    }}>
+                        🎬 Video Lesson
+                    </h2>
                     <div style={{
                         background: 'rgba(0,0,0,0.4)',
                         border: '1px solid rgba(255,255,255,0.06)',
@@ -209,10 +222,10 @@ export default function Lesson() {
                         </div>
                         <div>
                             <p style={{ color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 600, margin: '0 0 0.25rem' }}>
-                                Custom Video Lesson
+                                No video attached yet
                             </p>
                             <p style={{ color: 'var(--text-muted)', fontSize: '0.825rem', margin: 0, maxWidth: 400 }}>
-                                There is no direct video linked to this custom lesson. Click below to search YouTube for educational resources on this topic.
+                                Your teacher hasn't linked a video for this topic. Search YouTube for educational resources below.
                             </p>
                         </div>
                         <button
@@ -234,8 +247,8 @@ export default function Lesson() {
                             Search YouTube ↗
                         </button>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
             {/* Footer CTA */}
             <div className="card flex-responsive animate-fade-in-up" style={{

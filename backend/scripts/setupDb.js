@@ -422,7 +422,8 @@ async function setupDatabase() {
                 subject_id INTEGER NOT NULL REFERENCES Subjects(id),
                 order_index INTEGER NOT NULL,
                 title TEXT NOT NULL,
-                content TEXT
+                content TEXT,
+                youtube_url TEXT
             )
         `);
 

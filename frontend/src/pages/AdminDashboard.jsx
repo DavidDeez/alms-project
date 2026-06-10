@@ -55,7 +55,7 @@ export default function AdminDashboard() {
     const [generatingId, setGeneratingId] = useState(null);
 
     const [subjectName, setSubjectName] = useState('');
-    const [topicForm, setTopicForm] = useState({ subject_id: '', title: '', content: '' });
+    const [topicForm, setTopicForm] = useState({ subject_id: '', title: '', content: '', youtube_url: '' });
     const [quizForm, setQuizForm] = useState({ question: '', optA: '', optB: '', optC: '', optD: '', correct_answer: '' });
     const [saving, setSaving] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
@@ -64,6 +64,8 @@ export default function AdminDashboard() {
     const [aiStatus, setAiStatus] = useState({ configured: false, model: '', available_models: [] });
     const [selectedModel, setSelectedModel] = useState('');
     const [defaultQuestionCount, setDefaultQuestionCount] = useState(5);
+    const [apiKeyInput, setApiKeyInput] = useState('');
+    const [savingSettings, setSavingSettings] = useState(false);
     const [testingConnection, setTestingConnection] = useState(false);
     const [testResult, setTestResult] = useState(null);
 
@@ -85,10 +87,10 @@ export default function AdminDashboard() {
         try {
             const res = await axios.get(`${API_URL}/api/admin/ai-status`, { headers });
             setAiStatus(res.data);
-            const savedModel = localStorage.getItem('alms_ai_model');
-            const savedCount = localStorage.getItem('alms_ai_question_count');
-            setSelectedModel(savedModel || res.data.model || 'google/gemini-2.5-flash');
-            setDefaultQuestionCount(savedCount ? parseInt(savedCount) : 5);
+            setSelectedModel(res.data.model || 'google/gemini-2.5-flash');
+            setDefaultQuestionCount(res.data.questionCount || 5);
+            // Show masked key from server if it exists
+            if (res.data.apiKey) setApiKeyInput(res.data.apiKey);
         } catch (err) {
             console.error('Failed to fetch AI status:', err);
         }
@@ -125,9 +127,10 @@ export default function AdminDashboard() {
             await axios.post(`${API_URL}/api/admin/topic`, {
                 subject_id: topicForm.subject_id || activeSubject,
                 title: topicForm.title,
-                content: topicForm.content
+                content: topicForm.content,
+                youtube_url: topicForm.youtube_url || null
             }, { headers });
-            setTopicForm({ subject_id: '', title: '', content: '' });
+            setTopicForm({ subject_id: '', title: '', content: '', youtube_url: '' });
             setShowTopicModal(false);
             flash('Topic created!');
             fetchData();
@@ -185,11 +188,27 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleSaveAISettings = (e) => {
+    const handleSaveAISettings = async (e) => {
         e.preventDefault();
-        localStorage.setItem('alms_ai_model', selectedModel);
-        localStorage.setItem('alms_ai_question_count', defaultQuestionCount.toString());
-        flash('AI Settings saved successfully!');
+        setSavingSettings(true);
+        try {
+            const payload = {
+                model: selectedModel,
+                questionCount: defaultQuestionCount,
+            };
+            // Only include API key if user typed a real value (not the masked placeholder)
+            if (apiKeyInput && !apiKeyInput.includes('...')) {
+                payload.apiKey = apiKeyInput;
+            }
+            await axios.post(`${API_URL}/api/admin/ai-settings`, payload, { headers });
+            flash('AI Settings saved successfully!');
+            // Refresh status to show updated masked key & configured state
+            fetchAIStatus();
+        } catch (err) {
+            alert(err.response?.data?.error || 'Failed to save AI settings.');
+        } finally {
+            setSavingSettings(false);
+        }
     };
 
     const handleTestAIConnection = async () => {
@@ -539,7 +558,40 @@ export default function AdminDashboard() {
 
                     {/* Configuration Form */}
                     <form onSubmit={handleSaveAISettings} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        
+
+                        {/* API Key Input */}
+                        <div>
+                            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                                OpenRouter API Key
+                            </label>
+                            <div style={{ position: 'relative' }}>
+                                <input
+                                    id="ai-api-key-input"
+                                    type="password"
+                                    value={apiKeyInput}
+                                    onChange={e => setApiKeyInput(e.target.value)}
+                                    placeholder={aiStatus.configured ? 'Key saved — enter a new one to replace it' : 'sk-or-v1-...'}
+                                    className="input-field"
+                                    style={{ width: '100%', paddingRight: '3rem', fontFamily: 'monospace', letterSpacing: '0.05em' }}
+                                />
+                                {aiStatus.configured && (
+                                    <span style={{
+                                        position: 'absolute', right: '0.875rem', top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        fontSize: '0.7rem', fontWeight: 700,
+                                        color: '#34d399',
+                                        background: 'rgba(52,211,153,0.1)',
+                                        border: '1px solid rgba(52,211,153,0.2)',
+                                        borderRadius: '0.375rem', padding: '0.15rem 0.4rem',
+                                        pointerEvents: 'none'
+                                    }}>SAVED</span>
+                                )}
+                            </div>
+                            <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+                                Get your key at <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" style={{ color: 'var(--primary)', textDecoration: 'none' }}>openrouter.ai/keys</a>. Leave blank to keep the existing key.
+                            </span>
+                        </div>
+
                         {/* Model Select */}
                         <div>
                             <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
@@ -668,10 +720,15 @@ export default function AdminDashboard() {
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem', marginTop: '1rem' }}>
                             <button
                                 type="submit"
+                                disabled={savingSettings}
                                 className="btn-primary"
-                                style={{ padding: '0.75rem 2rem' }}
+                                style={{ padding: '0.75rem 2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                             >
-                                Save Configuration
+                                {savingSettings ? (
+                                    <><span style={{ width: 16, height: 16, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', animation: 'spin 0.7s linear infinite', display: 'inline-block' }} /><span>Saving...</span></>
+                                ) : (
+                                    <><Check size={16} /><span>Save Configuration</span></>
+                                )}
                             </button>
                         </div>
                     </form>
@@ -695,7 +752,7 @@ export default function AdminDashboard() {
             )}
 
             {showTopicModal && (
-                <Modal title="Add New Topic" onClose={() => setShowTopicModal(false)}>
+                <Modal title="Add New Topic" onClose={() => { setTopicForm({ subject_id: '', title: '', content: '', youtube_url: '' }); setShowTopicModal(false); }}>
                     <form onSubmit={handleCreateTopic} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Topic Title</label>
@@ -713,6 +770,47 @@ export default function AdminDashboard() {
                                 style={{ resize: 'vertical' }}
                             />
                         </div>
+
+                        {/* YouTube Video Link */}
+                        <div style={{
+                            background: 'rgba(255, 0, 0, 0.04)',
+                            border: '1px solid rgba(255, 80, 80, 0.2)',
+                            borderRadius: '0.875rem',
+                            padding: '1rem'
+                        }}>
+                            <label style={{
+                                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                                fontSize: '0.85rem', fontWeight: 600,
+                                color: 'var(--text-secondary)', marginBottom: '0.6rem'
+                            }}>
+                                <span style={{
+                                    width: 22, height: 22, borderRadius: '5px',
+                                    background: '#ff0000',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '0.7rem', flexShrink: 0
+                                }}>▶</span>
+                                YouTube Video Link
+                                <span style={{
+                                    marginLeft: 'auto', fontSize: '0.7rem', fontWeight: 500,
+                                    color: 'var(--text-muted)', background: 'rgba(255,255,255,0.06)',
+                                    border: '1px solid var(--border)', borderRadius: '1rem',
+                                    padding: '0.1rem 0.5rem'
+                                }}>Optional</span>
+                            </label>
+                            <input
+                                id="topic-youtube-input"
+                                type="url"
+                                value={topicForm.youtube_url}
+                                onChange={e => setTopicForm({ ...topicForm, youtube_url: e.target.value })}
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                className="input-field"
+                                style={{ fontFamily: 'monospace', fontSize: '0.82rem' }}
+                            />
+                            <span style={{ display: 'block', fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.35rem' }}>
+                                Paste any YouTube link — watch, share, or embed. Students will see an embedded player.
+                            </span>
+                        </div>
+
                         <button type="submit" disabled={saving} className="btn-primary" style={{ width: '100%' }}>
                             {saving ? 'Creating...' : 'Create Topic'}
                         </button>

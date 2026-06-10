@@ -1,5 +1,24 @@
 const db = require('../config/db');
 
+async function getSystemSetting(key, fallbackValue) {
+    try {
+        const res = await db.query('SELECT setting_value FROM SystemSettings WHERE setting_key = $1', [key]);
+        if (res.rows && res.rows.length > 0 && res.rows[0].setting_value !== null && res.rows[0].setting_value !== undefined) {
+            return res.rows[0].setting_value;
+        }
+    } catch (err) {
+        console.error(`Error fetching system setting ${key}:`, err);
+    }
+    return fallbackValue;
+}
+
+async function getAISettings() {
+    const apiKey = await getSystemSetting('openrouter_api_key', process.env.OPENROUTER_API_KEY || '');
+    const model = await getSystemSetting('openrouter_model', process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash');
+    const questionCount = parseInt(await getSystemSetting('ai_question_count', '5')) || 5;
+    return { apiKey, model, questionCount };
+}
+
 // GET /api/admin/dashboard
 exports.getAdminDashboard = async (req, res) => {
     try {
@@ -46,7 +65,7 @@ exports.createSubject = async (req, res) => {
 // POST /api/admin/topic
 exports.createTopic = async (req, res) => {
     try {
-        const { subject_id, title, content } = req.body;
+        const { subject_id, title, content, youtube_url } = req.body;
         if (!subject_id || !title) {
             return res.status(400).json({ error: 'subject_id and title are required' });
         }
@@ -58,9 +77,17 @@ exports.createTopic = async (req, res) => {
         );
         const nextOrder = orderResult.rows[0]?.next_order || 1;
 
+        // Normalize YouTube URL to embed format
+        const normalizeYouTube = (url) => {
+            if (!url) return null;
+            const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+            return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+        };
+        const embedUrl = normalizeYouTube(youtube_url);
+
         await db.query(
-            'INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, $2, $3, $4)',
-            [subject_id, nextOrder, title, content || '']
+            'INSERT INTO Topics (subject_id, order_index, title, content, youtube_url) VALUES ($1, $2, $3, $4, $5)',
+            [subject_id, nextOrder, title, content || '', embedUrl || null]
         );
 
         res.status(201).json({ message: 'Topic created successfully' });
@@ -108,33 +135,72 @@ exports.deleteTopic = async (req, res) => {
 };
 
 // GET /api/admin/ai-status — Returns AI configuration status
-exports.getAIStatus = (req, res) => {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    const model = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
-    res.json({
-        configured: !!apiKey,
-        model: model,
-        available_models: [
-            { id: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash (Recommended)' },
-            { id: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash' },
-            { id: 'meta-llama/llama-3.1-8b-instruct:free', label: 'LLaMA 3.1 8B (Free)' },
-            { id: 'meta-llama/llama-3.3-70b-instruct', label: 'LLaMA 3.3 70B' },
-            { id: 'mistralai/mistral-7b-instruct:free', label: 'Mistral 7B (Free)' },
-            { id: 'openai/gpt-4o-mini', label: 'GPT-4o Mini' },
-            { id: 'anthropic/claude-3-haiku', label: 'Claude 3 Haiku' },
-        ]
-    });
+exports.getAIStatus = async (req, res) => {
+    try {
+        const { apiKey, model, questionCount } = await getAISettings();
+        
+        let maskedKey = '';
+        if (apiKey) {
+            if (apiKey.length > 12) {
+                maskedKey = apiKey.substring(0, 8) + '...' + apiKey.substring(apiKey.length - 4);
+            } else {
+                maskedKey = '••••••••';
+            }
+        }
+
+        res.json({
+            configured: !!apiKey,
+            apiKey: maskedKey,
+            model: model,
+            questionCount: questionCount,
+            available_models: [
+                { id: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash (Recommended)' },
+                { id: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash' },
+                { id: 'meta-llama/llama-3.1-8b-instruct:free', label: 'LLaMA 3.1 8B (Free)' },
+                { id: 'meta-llama/llama-3.3-70b-instruct', label: 'LLaMA 3.3 70B' },
+                { id: 'mistralai/mistral-7b-instruct:free', label: 'Mistral 7B (Free)' },
+                { id: 'openai/gpt-4o-mini', label: 'GPT-4o Mini' },
+                { id: 'anthropic/claude-3-haiku', label: 'Claude 3 Haiku' },
+            ]
+        });
+    } catch (error) {
+        console.error('getAIStatus error:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+// POST /api/admin/ai-settings — Updates AI configuration settings in DB
+exports.updateAISettings = async (req, res) => {
+    const { apiKey, model, questionCount } = req.body;
+    try {
+        if (apiKey !== undefined && !apiKey.includes('...')) {
+            await db.query('DELETE FROM SystemSettings WHERE setting_key = $1', ['openrouter_api_key']);
+            await db.query('INSERT INTO SystemSettings (setting_key, setting_value) VALUES ($1, $2)', ['openrouter_api_key', apiKey]);
+        }
+        if (model !== undefined) {
+            await db.query('DELETE FROM SystemSettings WHERE setting_key = $1', ['openrouter_model']);
+            await db.query('INSERT INTO SystemSettings (setting_key, setting_value) VALUES ($1, $2)', ['openrouter_model', model]);
+        }
+        if (questionCount !== undefined) {
+            await db.query('DELETE FROM SystemSettings WHERE setting_key = $1', ['ai_question_count']);
+            await db.query('INSERT INTO SystemSettings (setting_key, setting_value) VALUES ($1, $2)', ['ai_question_count', questionCount.toString()]);
+        }
+        res.json({ message: 'AI settings updated successfully!' });
+    } catch (error) {
+        console.error('updateAISettings error:', error);
+        res.status(500).json({ error: 'Failed to update AI settings.' });
+    }
 };
 
 // POST /api/admin/test-ai — Test the AI Connection
 exports.testAIConnection = async (req, res) => {
     try {
-        const apiKey = process.env.OPENROUTER_API_KEY;
+        const { apiKey } = await getAISettings();
         if (!apiKey) {
-            return res.status(400).json({ configured: false, error: 'OpenRouter API Key (OPENROUTER_API_KEY) is not set on the server!' });
+            return res.status(400).json({ configured: false, error: 'OpenRouter API Key is not set on the server!' });
         }
 
-        const model = req.body.model || process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+        const model = req.body.model || (await getAISettings()).model || 'google/gemini-2.5-flash';
         const fetchFn = globalThis.fetch;
         
         const response = await fetchFn('https://openrouter.ai/api/v1/chat/completions', {
@@ -171,7 +237,6 @@ exports.testAIConnection = async (req, res) => {
 exports.generateQuiz = async (req, res) => {
     try {
         const { id: topicId } = req.params;
-        // Allow frontend to override model and question count
         const modelOverride = req.body.model;
         const questionCount = parseInt(req.body.questionCount) || 5;
 
@@ -183,12 +248,12 @@ exports.generateQuiz = async (req, res) => {
         const topic = topicResult.rows[0];
 
         // 2. Setup OpenRouter call
-        const apiKey = process.env.OPENROUTER_API_KEY;
+        const { apiKey, model: dbModel } = await getAISettings();
         if (!apiKey) {
-            return res.status(500).json({ error: 'OpenRouter API Key (OPENROUTER_API_KEY) is not set on the server!' });
+            return res.status(500).json({ error: 'OpenRouter API Key is not set on the server!' });
         }
 
-        const model = modelOverride || process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+        const model = modelOverride || dbModel || 'google/gemini-2.5-flash';
         console.log(`Generating ${questionCount} quiz questions for: "${topic.title}" using model: ${model}`);
 
         const systemPrompt = `You are an expert educator for Nigerian secondary school students. Generate ${questionCount} multiple-choice questions for the following lesson content.
