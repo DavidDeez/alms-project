@@ -48,14 +48,7 @@ export default function Login() {
 
                 <div style={{ position: 'relative', textAlign: 'center', maxWidth: 360 }} className="animate-fade-in-up">
                     {/* Logo */}
-                    <div style={{
-                        width: 72, height: 72,
-                        background: 'linear-gradient(135deg, #6366f1, #38bdf8)',
-                        borderRadius: '1.5rem',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 2rem',
-                        boxShadow: '0 8px 32px rgba(99,102,241,0.4)'
-                    }}>
+                    <div className="logo-container-3d">
                         <GraduationCap size={36} color="white" />
                     </div>
 
@@ -64,10 +57,10 @@ export default function Login() {
                         fontSize: '2.5rem',
                         fontWeight: 800,
                         letterSpacing: '-0.03em',
-                        margin: '0 0 0.75rem',
+                        margin: '0 0 0.5rem',
                         lineHeight: 1.1
                     }}>
-                        <span className="gradient-text">LearnSync</span>
+                        <span className="glass-luminous-3d">LearnSync</span>
                         <br />
                         <span style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 600 }}>ALMS</span>
                     </h1>
@@ -76,7 +69,7 @@ export default function Login() {
                         color: 'var(--text-secondary)',
                         fontSize: '1rem',
                         lineHeight: 1.7,
-                        marginBottom: '2.5rem'
+                        marginBottom: '2rem'
                     }}>
                         Your personalized adaptive learning platform. Master topics at your own pace with intelligent guidance.
                     </p>

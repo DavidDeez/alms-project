@@ -382,13 +382,77 @@ h1, h2, h3, h4, h5, h6 {
     flex: 0 0 45%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding: 3rem;
+    padding: 5.5rem 3rem 3rem;
     background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(56,189,248,0.1) 100%);
     border-right: 1px solid var(--border);
     position: relative;
     overflow: hidden;
+}
+
+@keyframes float-3d {
+    0% {
+        transform: translateY(0px) rotateX(10deg) rotateY(-10deg) rotateZ(-2deg);
+        box-shadow: 
+            -4px 8px 16px rgba(0, 0, 0, 0.35),
+            -8px 12px 32px rgba(99, 102, 241, 0.25),
+            inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        transform: translateY(-10px) rotateX(-10deg) rotateY(10deg) rotateZ(2deg);
+        box-shadow: 
+            4px 16px 24px rgba(0, 0, 0, 0.25),
+            8px 20px 40px rgba(99, 102, 241, 0.35),
+            inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        transform: translateY(0px) rotateX(10deg) rotateY(-10deg) rotateZ(-2deg);
+        box-shadow: 
+            -4px 8px 16px rgba(0, 0, 0, 0.35),
+            -8px 12px 32px rgba(99, 102, 241, 0.25),
+            inset 0 1px 1px rgba(255, 255, 255, 0.4);
+    }
+}
+
+.logo-container-3d {
+    width: 76px;
+    height: 76px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(56, 189, 248, 0.15));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    border-right-color: rgba(255, 255, 255, 0.1);
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    position: relative;
+    transform-style: preserve-3d;
+    perspective: 800px;
+    animation: float-3d 5s ease-in-out infinite;
+}
+
+.logo-container-3d svg {
+    transform: translateZ(24px);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.glass-luminous-3d {
+    color: #ffffff !important;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-shadow:
+        -1px -1px 0px rgba(255, 255, 255, 0.5),
+        1px 1px 0px #818cf8,
+        2px 2px 0px #6366f1,
+        3px 3px 0px #4f46e5,
+        4px 4px 0px #312e81,
+        0px 0px 8px rgba(255, 255, 255, 0.8),
+        0px 0px 15px rgba(99, 102, 241, 0.6),
+        0px 0px 30px rgba(56, 189, 248, 0.4);
 }
 
 .form-panel {

@@ -43,25 +43,20 @@ export default function Register() {
                 }} />
 
                 <div style={{ position: 'relative', textAlign: 'center', maxWidth: 340 }} className="animate-fade-in-up">
-                    <div style={{
-                        width: 72, height: 72,
-                        background: 'var(--panel-bg)',
-                        border: '1px solid var(--panel-border)',
-                        borderRadius: '8px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        margin: '0 auto 2rem',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
-                    }}>
-                        <Rocket size={34} color="var(--primary)" />
+                    {/* Logo */}
+                    <div className="logo-container-3d">
+                        <GraduationCap size={36} color="white" />
                     </div>
 
                     <h1 style={{
                         fontFamily: 'Outfit, sans-serif',
                         fontSize: '2.2rem', fontWeight: 800,
                         letterSpacing: '-0.03em',
-                        margin: '0 0 0.75rem', lineHeight: 1.1
+                        margin: '0 0 0.5rem', lineHeight: 1.1
                     }}>
-                        <span className="gradient-text">Join LearnSync ALMS</span>
+                        <span className="glass-luminous-3d">LearnSync</span>
+                        <br />
+                        <span style={{ color: 'var(--text-primary)', fontSize: '1.4rem', fontWeight: 600 }}>ALMS</span>
                     </h1>
 
                     <p style={{
@@ -92,14 +87,11 @@ export default function Register() {
                         fontFamily: 'Outfit, sans-serif',
                         fontSize: '2rem', fontWeight: 700,
                         color: 'var(--text-primary)',
-                        margin: '0 0 0.5rem',
+                        margin: '0 0 2.5rem',
                         letterSpacing: '-0.02em'
                     }}>
                         Create your account
                     </h2>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem', fontSize: '0.95rem' }}>
-                        Free to join — no credit card needed
-                    </p>
 
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <div>
