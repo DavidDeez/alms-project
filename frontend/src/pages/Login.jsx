@@ -33,13 +33,13 @@ export default function Login() {
             {/* Left — Brand Panel */}
             <div className="brand-panel">
                 {/* Decorative orbs */}
-                <div style={{
+                <div className="brand-orb" style={{
                     position: 'absolute', top: '10%', left: '10%',
                     width: 300, height: 300,
                     background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)',
                     borderRadius: '50%', filter: 'blur(40px)'
                 }} />
-                <div style={{
+                <div className="brand-orb" style={{
                     position: 'absolute', bottom: '15%', right: '5%',
                     width: 250, height: 250,
                     background: 'radial-gradient(circle, rgba(56,189,248,0.15) 0%, transparent 70%)',
@@ -77,29 +77,31 @@ export default function Login() {
                     </p>
 
                     {/* Feature chips */}
-                    {[
-                        { icon: Brain, text: 'Adaptive Learning Engine', color: '#818cf8' },
-                        { icon: BarChart3, text: 'Real-time Progress Tracking', color: '#38bdf8' },
-                        { icon: Trophy, text: 'Mastery-Based Advancement', color: '#fbbf24' }
-                    ].map((feat) => {
-                        const IconComponent = feat.icon;
-                        return (
-                            <div key={feat.text} style={{
-                                display: 'flex', alignItems: 'center', gap: '0.75rem',
-                                background: 'rgba(255,255,255,0.04)',
-                                border: '1px solid var(--border)',
-                                borderRadius: '0.75rem',
-                                padding: '0.6rem 1rem',
-                                marginBottom: '0.75rem',
-                                fontSize: '0.875rem',
-                                color: 'var(--text-secondary)',
-                                textAlign: 'left'
-                            }}>
-                                <IconComponent size={18} color={feat.color} style={{ flexShrink: 0 }} />
-                                <span>{feat.text}</span>
-                            </div>
-                        );
-                    })}
+                    <div className="hide-on-mobile">
+                        {[
+                            { icon: Brain, text: 'Adaptive Learning Engine', color: '#818cf8' },
+                            { icon: BarChart3, text: 'Real-time Progress Tracking', color: '#38bdf8' },
+                            { icon: Trophy, text: 'Mastery-Based Advancement', color: '#fbbf24' }
+                        ].map((feat) => {
+                            const IconComponent = feat.icon;
+                            return (
+                                <div key={feat.text} style={{
+                                    display: 'flex', alignItems: 'center', gap: '0.75rem',
+                                    background: 'rgba(255,255,255,0.04)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '0.75rem',
+                                    padding: '0.6rem 1rem',
+                                    marginBottom: '0.75rem',
+                                    fontSize: '0.875rem',
+                                    color: 'var(--text-secondary)',
+                                    textAlign: 'left'
+                                }}>
+                                    <IconComponent size={18} color={feat.color} style={{ flexShrink: 0 }} />
+                                    <span>{feat.text}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 

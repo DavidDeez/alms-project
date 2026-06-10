@@ -29,13 +29,13 @@ export default function Register() {
         <div className="split-layout">
             {/* Left — Brand Panel */}
             <div className="brand-panel">
-                <div style={{
+                <div className="brand-orb" style={{
                     position: 'absolute', top: '20%', right: '0%',
                     width: 280, height: 280,
                     background: 'radial-gradient(circle, rgba(56,189,248,0.18) 0%, transparent 70%)',
                     borderRadius: '50%', filter: 'blur(40px)'
                 }} />
-                <div style={{
+                <div className="brand-orb" style={{
                     position: 'absolute', bottom: '10%', left: '0%',
                     width: 220, height: 220,
                     background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
@@ -70,7 +70,7 @@ export default function Register() {
                         Master topics at your own pace with intelligent guidance.
                     </p>
 
-                    <div style={{
+                    <div className="hide-on-mobile" style={{
                         background: 'rgba(255,255,255,0.04)',
                         border: '1px solid var(--border)',
                         borderRadius: '1rem',
