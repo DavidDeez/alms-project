@@ -67,7 +67,7 @@ export default function Register() {
                         color: '#cbd5e1',
                         marginBottom: '2rem'
                     }}>
-                        Master topics at your own pace with intelligent guidance.
+                        ᴍᴀꜱᴛᴇʀ ᴛᴏᴘɪᴄꜱ ᴀᴛ ʏᴏᴜʀ ᴏᴡɴ ᴘᴀᴄᴇ ᴡɪᴛʜ ɪɴᴛᴇʟʟɪɢᴇɴᴛ ɢᴜɪᴅᴀɴᴄᴇ.
                     </p>
 
                     <div className="hide-on-mobile" style={{
