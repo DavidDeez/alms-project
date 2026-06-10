@@ -238,7 +238,8 @@ exports.generateQuiz = async (req, res) => {
     try {
         const { id: topicId } = req.params;
         const modelOverride = req.body.model;
-        const questionCount = parseInt(req.body.questionCount) || 5;
+        // Enforce minimum 5 questions always
+        const questionCount = Math.max(5, parseInt(req.body.questionCount) || 5);
 
         // 1. Get topic details
         const topicResult = await db.query('SELECT title, content FROM Topics WHERE id = $1', [topicId]);
@@ -280,7 +281,7 @@ Do not include any markdown format tags like \`\`\`json or explanations. Only re
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userPrompt }
                 ],
-                max_tokens: 1500 // Limit output size to prevent 402 credit reservation errors on low-balance OpenRouter accounts
+                max_tokens: Math.max(2500, questionCount * 500)
             })
         });
 
@@ -325,3 +326,96 @@ Do not include any markdown format tags like \`\`\`json or explanations. Only re
         res.status(500).json({ error: 'Failed to generate quiz: ' + error.message });
     }
 };
+
+// POST /api/admin/topic/:id/generate-content — AI generates rich textbook lesson material
+exports.generateLessonContent = async (req, res) => {
+    try {
+        const { id: topicId } = req.params;
+
+        const topicResult = await db.query('SELECT title, content FROM Topics WHERE id = $1', [topicId]);
+        if (topicResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Topic not found' });
+        }
+        const topic = topicResult.rows[0];
+
+        const { apiKey, model: dbModel } = await getAISettings();
+        if (!apiKey) {
+            return res.status(500).json({ error: 'OpenRouter API Key is not set on the server!' });
+        }
+
+        const model = req.body.model || dbModel || 'google/gemini-2.5-flash';
+        console.log(`Generating lesson content for: "${topic.title}" using model: ${model}`);
+
+        const systemPrompt = `You are an expert Nigerian secondary school curriculum writer (JSS/SSS level).
+Write detailed, textbook-quality lesson material for the given topic.
+
+Use EXACTLY these formatting markers (they will be parsed by the frontend renderer):
+
+## Section Title        <- major section heading
+### Subsection Title    <- minor subsection heading
+**key term**            <- bold important words
+- bullet item           <- bullet list item
+1. numbered step        <- numbered/ordered step
+
+EXAMPLE:
+[write a worked example here with clear steps]
+END_EXAMPLE
+
+FORMULA:
+[write the formula or equation here]
+END_FORMULA
+
+NOTE: [write a short important note or tip here]
+
+Rules:
+- Write at least 700 words of educational content
+- Include: Introduction, Key Concepts, at least 2-3 fully worked Examples, Summary
+- For maths/science: show every step in examples
+- Use Nigerian curriculum context where relevant
+- Do NOT use markdown code fences (\`\`\`)
+- Only use the markers defined above`;
+
+        const userPrompt = `Topic: ${topic.title}\n${topic.content ? `Existing notes: ${topic.content.substring(0, 300)}` : ''}`;
+
+        const fetchFn = globalThis.fetch;
+        const response = await fetchFn('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'HTTP-Referer': 'https://alms-project.onrender.com',
+                'X-Title': 'LearnSync ALMS'
+            },
+            body: JSON.stringify({
+                model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userPrompt }
+                ],
+                max_tokens: 3500
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`OpenRouter API error: ${response.status} - ${errText}`);
+        }
+
+        const responseData = await response.json();
+        const content = responseData.choices?.[0]?.message?.content;
+
+        if (!content) throw new Error('Empty response from OpenRouter API');
+
+        const cleanContent = content.trim().replace(/^```[\w]*\n?/m, '').replace(/\n?```$/m, '').trim();
+
+        // Save updated content to DB
+        await db.query('UPDATE Topics SET content = $1 WHERE id = $2', [cleanContent, topicId]);
+
+        res.json({ message: 'Lesson content generated!', content: cleanContent, model });
+
+    } catch (error) {
+        console.error('AI Content generation error:', error);
+        res.status(500).json({ error: 'Failed to generate content: ' + error.message });
+    }
+};
+

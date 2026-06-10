@@ -53,6 +53,7 @@ export default function AdminDashboard() {
     const [showQuizModal, setShowQuizModal] = useState(false);
     const [selectedTopicId, setSelectedTopicId] = useState(null);
     const [generatingId, setGeneratingId] = useState(null);
+    const [generatingContentId, setGeneratingContentId] = useState(null);
 
     const [subjectName, setSubjectName] = useState('');
     const [topicForm, setTopicForm] = useState({ subject_id: '', title: '', content: '', youtube_url: '' });
@@ -173,7 +174,7 @@ export default function AdminDashboard() {
         setGeneratingId(topicId);
         try {
             const currentModel = localStorage.getItem('alms_ai_model') || selectedModel || 'google/gemini-2.5-flash';
-            const currentCount = parseInt(localStorage.getItem('alms_ai_question_count')) || defaultQuestionCount || 5;
+            const currentCount = Math.max(5, parseInt(localStorage.getItem('alms_ai_question_count')) || defaultQuestionCount || 5);
 
             const res = await axios.post(`${API_URL}/api/admin/topic/${topicId}/generate-quiz`, {
                 model: currentModel,
@@ -185,6 +186,22 @@ export default function AdminDashboard() {
             alert(err.response?.data?.error || 'Failed to generate AI Quiz. Make sure OPENROUTER_API_KEY is configured.');
         } finally {
             setGeneratingId(null);
+        }
+    };
+
+    const handleGenerateContent = async (topicId) => {
+        setGeneratingContentId(topicId);
+        try {
+            const currentModel = localStorage.getItem('alms_ai_model') || selectedModel || 'google/gemini-2.5-flash';
+            const res = await axios.post(`${API_URL}/api/admin/topic/${topicId}/generate-content`, {
+                model: currentModel
+            }, { headers });
+            flash('✅ Lesson content generated and saved!');
+            fetchData();
+        } catch (err) {
+            alert(err.response?.data?.error || 'Failed to generate lesson content. Check AI settings.');
+        } finally {
+            setGeneratingContentId(null);
         }
     };
 
@@ -639,34 +656,54 @@ export default function AdminDashboard() {
                                                         background: 'rgba(56,189,248,0.12)',
                                                         border: '1px solid rgba(56,189,248,0.3)',
                                                         color: '#38bdf8', borderRadius: '0.5rem',
-                                                        padding: '0.4rem 0.8rem', fontSize: '0.8rem',
+                                                        padding: '0.4rem 0.8rem', fontSize: '0.78rem',
                                                         cursor: 'pointer', fontWeight: 600
                                                     }}
                                                 >
                                                     + Quiz Q
                                                 </button>
+                                                {/* AI Generate Lesson Content */}
+                                                <button
+                                                    onClick={() => handleGenerateContent(topic.id)}
+                                                    disabled={generatingContentId === topic.id}
+                                                    title="Generate textbook-style lesson material with AI"
+                                                    style={{
+                                                        background: 'rgba(52,211,153,0.12)',
+                                                        border: '1px solid rgba(52,211,153,0.3)',
+                                                        color: '#34d399', borderRadius: '0.5rem',
+                                                        padding: '0.4rem 0.8rem', fontSize: '0.78rem',
+                                                        cursor: generatingContentId === topic.id ? 'not-allowed' : 'pointer',
+                                                        fontWeight: 600,
+                                                        display: 'flex', alignItems: 'center', gap: '0.3rem',
+                                                        opacity: generatingContentId === topic.id ? 0.7 : 1
+                                                    }}
+                                                >
+                                                    {generatingContentId === topic.id ? (
+                                                        <><Activity size={12} className="animate-pulse" /><span>Writing...</span></>
+                                                    ) : (
+                                                        <><Sparkles size={12} /><span>AI Lesson</span></>
+                                                    )}
+                                                </button>
+                                                {/* AI Generate Quiz */}
                                                 <button
                                                     onClick={() => handleGenerateAIQuiz(topic.id)}
                                                     disabled={generatingId === topic.id}
+                                                    title="Generate quiz questions with AI"
                                                     style={{
                                                         background: 'rgba(129,140,248,0.12)',
                                                         border: '1px solid rgba(129,140,248,0.3)',
                                                         color: '#818cf8', borderRadius: '0.5rem',
-                                                        padding: '0.4rem 0.8rem', fontSize: '0.8rem',
-                                                        cursor: 'pointer', fontWeight: 600,
-                                                        display: 'flex', alignItems: 'center', gap: '0.35rem'
+                                                        padding: '0.4rem 0.8rem', fontSize: '0.78rem',
+                                                        cursor: generatingId === topic.id ? 'not-allowed' : 'pointer',
+                                                        fontWeight: 600,
+                                                        display: 'flex', alignItems: 'center', gap: '0.35rem',
+                                                        opacity: generatingId === topic.id ? 0.7 : 1
                                                     }}
                                                 >
                                                     {generatingId === topic.id ? (
-                                                        <>
-                                                            <Activity size={13} className="animate-pulse" />
-                                                            <span>Generating...</span>
-                                                        </>
+                                                        <><Activity size={13} className="animate-pulse" /><span>Generating...</span></>
                                                     ) : (
-                                                        <>
-                                                            <Sparkles size={13} />
-                                                            <span>AI Quiz</span>
-                                                        </>
+                                                        <><Sparkles size={13} /><span>AI Quiz</span></>
                                                     )}
                                                 </button>
                                                 <button

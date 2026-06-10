@@ -23,7 +23,7 @@ function StatCard({ icon, label, value, color }) {
     );
 }
 
-function TopicCard({ topic, onStart, index }) {
+function TopicCard({ topic, onStart, onQuiz, index }) {
     const isReview = topic.needsReview;
     const accentColor = isReview ? '#f87171' : '#818cf8';
     const bgColor = isReview ? 'rgba(248,113,113,0.06)' : 'rgba(129,140,248,0.06)';
@@ -81,29 +81,51 @@ function TopicCard({ topic, onStart, index }) {
 
             <div style={{ flex: 1 }} />
 
-            {/* CTA Button */}
-            <button
-                onClick={() => onStart(topic.id)}
-                style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    background: `linear-gradient(135deg, ${isReview ? '#dc2626, #f87171' : '#6366f1, #818cf8'})`,
-                    border: 'none', borderRadius: '0.75rem',
-                    color: 'white', fontWeight: 700,
-                    fontSize: '0.9rem', cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    boxShadow: `0 4px 15px ${accentColor}30`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
-                }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-            >
-                {isReview ? <BookOpen size={16} /> : <Play size={16} />}
-                <span>{isReview ? 'Review Material' : 'Continue Lesson'}</span>
-            </button>
+            {/* CTA Buttons */}
+            <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
+                <button
+                    onClick={() => onStart(topic.id)}
+                    style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        background: `linear-gradient(135deg, ${isReview ? '#dc2626, #f87171' : '#6366f1, #818cf8'})`,
+                        border: 'none', borderRadius: '0.75rem',
+                        color: 'white', fontWeight: 700,
+                        fontSize: '0.9rem', cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        boxShadow: `0 4px 15px ${accentColor}30`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                    {isReview ? <BookOpen size={16} /> : <Play size={16} />}
+                    <span>{isReview ? 'Review Material' : 'Continue Lesson'}</span>
+                </button>
+                <button
+                    onClick={() => onQuiz(topic.id)}
+                    style={{
+                        width: '100%',
+                        padding: '0.6rem',
+                        background: 'rgba(52,211,153,0.1)',
+                        border: '1px solid rgba(52,211,153,0.3)',
+                        borderRadius: '0.75rem',
+                        color: '#34d399', fontWeight: 600,
+                        fontSize: '0.82rem', cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(52,211,153,0.18)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(52,211,153,0.1)'; }}
+                >
+                    <span>Take Quiz</span>
+                    <span>→</span>
+                </button>
+            </div>
         </div>
     );
 }
+
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -390,7 +412,7 @@ export default function Dashboard() {
                 ) : (
                     <div className="topics-grid">
                         {data.activeTopics.map((topic, i) => (
-                            <TopicCard key={topic.id} topic={topic} index={i} onStart={id => navigate(`/lesson/${id}`)} />
+                            <TopicCard key={topic.id} topic={topic} index={i} onStart={id => navigate(`/lesson/${id}`)} onQuiz={id => navigate(`/quiz/${id}`)} />
                         ))}
                     </div>
                 )}
