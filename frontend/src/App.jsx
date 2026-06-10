@@ -81,6 +81,20 @@ function Navbar() {
                 border-color: rgba(129,140,248,0.25);
                 color: #818cf8;
             }
+            .nb-mobile-signout {
+                display: none;
+                align-items: center;
+                background: rgba(255,255,255,0.06);
+                border: 1px solid rgba(255,255,255,0.1);
+                color: #94a3b8;
+                border-radius: 0.375rem;
+                padding: 0.2rem 0.45rem;
+                font-size: 0.65rem;
+                font-weight: 500;
+                cursor: pointer;
+                white-space: nowrap;
+                font-family: 'Inter', sans-serif;
+            }
             @media (max-width: 640px) {
                 .nb-links { display: none !important; }
                 .nb-profile .nb-signout { display: none !important; }
@@ -141,21 +155,8 @@ function Navbar() {
                     <button onClick={handleLogout} className="btn-ghost nb-signout" style={{ fontSize: '0.8rem', padding: '0.4rem 0.875rem', whiteSpace: 'nowrap' }}>
                         Sign out
                     </button>
-                    {/* Mobile-only sign out — small transparent button */}
-                    <button onClick={handleLogout} className="nb-mobile-signout" style={{
-                        display: 'none',
-                        alignItems: 'center',
-                        background: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'var(--text-muted)',
-                        borderRadius: '0.5rem',
-                        padding: '0.3rem 0.6rem',
-                        fontSize: '0.7rem',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        whiteSpace: 'nowrap',
-                        fontFamily: 'Inter, sans-serif'
-                    }}>
+                    {/* Mobile-only tiny sign out */}
+                    <button onClick={handleLogout} className="nb-mobile-signout">
                         Sign out
                     </button>
                     {/* Hamburger — mobile only */}
