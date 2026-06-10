@@ -86,6 +86,7 @@ function Navbar() {
                 .nb-profile .nb-signout { display: none !important; }
                 .nb-hamburger { display: flex !important; align-items: center; justify-content: center; }
                 .nb-profile-name { display: none !important; }
+                .nb-mobile-signout { display: flex !important; }
             }
         `}</style>
 
@@ -116,27 +117,7 @@ function Navbar() {
                     {user.role === 'student' && <Link to="/" className="nav-link">Dashboard</Link>}
                     {user.role === 'teacher' && <Link to="/admin" className="nav-link">Teacher Panel</Link>}
                     <Link to="/curriculum" className="nav-link">NERDC Curriculum</Link>
-                    <button onClick={handleLogout} className="nb-mini-signout" style={{
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'var(--text-muted)',
-                        borderRadius: '0.5rem',
-                        padding: '0.35rem 0.7rem',
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        marginLeft: '0.25rem',
-                        whiteSpace: 'nowrap',
-                        fontFamily: 'Inter, sans-serif'
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.12)'; e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.3)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
-                    >
-                        Sign out
-                    </button>
                 </div>
-
 
                 {/* Desktop profile + signout | Mobile: avatar + hamburger */}
                 <div className="nb-profile">
@@ -158,6 +139,23 @@ function Navbar() {
                         </div>
                     </div>
                     <button onClick={handleLogout} className="btn-ghost nb-signout" style={{ fontSize: '0.8rem', padding: '0.4rem 0.875rem', whiteSpace: 'nowrap' }}>
+                        Sign out
+                    </button>
+                    {/* Mobile-only sign out — small transparent button */}
+                    <button onClick={handleLogout} className="nb-mobile-signout" style={{
+                        display: 'none',
+                        alignItems: 'center',
+                        background: 'rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'var(--text-muted)',
+                        borderRadius: '0.5rem',
+                        padding: '0.3rem 0.6rem',
+                        fontSize: '0.7rem',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        fontFamily: 'Inter, sans-serif'
+                    }}>
                         Sign out
                     </button>
                     {/* Hamburger — mobile only */}
