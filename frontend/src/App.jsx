@@ -45,10 +45,11 @@ function Navbar() {
             }}>
                 {/* Logo */}
                 <Link to={user.role === 'teacher' ? '/admin' : '/'} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-                    <div className="logo-container-3d" style={{
+                    <div style={{
                         width: 32, height: 32,
+                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(56, 189, 248, 0.15))',
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
                         borderRadius: '0.5rem',
-                        margin: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                     }}>
                         <GraduationCap size={16} color="white" />
@@ -65,7 +66,7 @@ function Navbar() {
                         <Link to="/" className="nav-link">Dashboard</Link>
                     )}
                     {user.role === 'teacher' && (
-                        <Link to="/admin" className="nav-link">Admin Panel</Link>
+                        <Link to="/admin" className="nav-link">Teacher Panel</Link>
                     )}
                     <Link to="/curriculum" className="nav-link">NERDC Curriculum</Link>
                 </div>

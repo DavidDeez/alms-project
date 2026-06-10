@@ -221,7 +221,7 @@ export default function AdminDashboard() {
                         margin: '0 auto 1rem'
                     }} />
                     <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-                    <p style={{ color: 'var(--text-secondary)' }}>Loading admin panel...</p>
+                    <p style={{ color: 'var(--text-secondary)' }}>Loading teacher panel...</p>
                 </div>
             </div>
         );
@@ -249,19 +249,11 @@ export default function AdminDashboard() {
             )}
 
             {/* Header */}
-            <div className="flex-responsive" style={{ marginBottom: '2.5rem' }}>
-                <div>
-                    <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
-                        <span className="gradient-text">Admin Panel</span>
-                    </h1>
-                    <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage subjects, topics, and quiz content</p>
-                </div>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{user?.name}</span>
-                    <button onClick={() => { logout(); navigate('/login'); }} className="btn-ghost" style={{ fontSize: '0.85rem' }}>
-                        Sign out
-                    </button>
-                </div>
+            <div style={{ marginBottom: '2.5rem' }}>
+                <h1 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '2.2rem', fontWeight: 800, margin: '0 0 0.5rem', letterSpacing: '-0.02em' }}>
+                    <span className="gradient-text">Teacher Panel</span>
+                </h1>
+                <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage subjects, topics, and quiz content</p>
             </div>
 
             {/* Stats Row */}

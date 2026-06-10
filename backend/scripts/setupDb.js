@@ -474,22 +474,34 @@ async function setupDatabase() {
 
         // Seed Subjects
         const subjectRes = await db.query(
-            `INSERT INTO Subjects (name) VALUES ($1), ($2) RETURNING id`,
-            ['Mathematics', 'Basic Science']
+            `INSERT INTO Subjects (name) VALUES ($1), ($2), ($3), ($4), ($5), ($6) RETURNING id`,
+            ['Mathematics', 'Basic Science', 'English Language', 'Social Studies', 'Computer Studies', 'Agricultural Science']
         );
         // SQLite RETURNING clause compatibility fallback
-        let mathId, sciId;
+        let mathId, sciId, engId, socId, compId, agricId;
         if (subjectRes.rows && subjectRes.rows.length > 0) {
             mathId = subjectRes.rows[0].id;
             sciId  = subjectRes.rows[1].id;
+            engId  = subjectRes.rows[2].id;
+            socId  = subjectRes.rows[3].id;
+            compId = subjectRes.rows[4].id;
+            agricId = subjectRes.rows[5].id;
         } else {
             const mathRow = await db.query("SELECT id FROM Subjects WHERE name = 'Mathematics'");
             const sciRow = await db.query("SELECT id FROM Subjects WHERE name = 'Basic Science'");
+            const engRow = await db.query("SELECT id FROM Subjects WHERE name = 'English Language'");
+            const socRow = await db.query("SELECT id FROM Subjects WHERE name = 'Social Studies'");
+            const compRow = await db.query("SELECT id FROM Subjects WHERE name = 'Computer Studies'");
+            const agricRow = await db.query("SELECT id FROM Subjects WHERE name = 'Agricultural Science'");
             mathId = mathRow.rows[0].id;
             sciId = sciRow.rows[0].id;
+            engId = engRow.rows[0].id;
+            socId = socRow.rows[0].id;
+            compId = compRow.rows[0].id;
+            agricId = agricRow.rows[0].id;
         }
 
-        console.log(`Subjects seeded: Math ID = ${mathId}, Science ID = ${sciId}`);
+        console.log(`Subjects seeded: Math=${mathId}, Sci=${sciId}, Eng=${engId}, Soc=${socId}, Comp=${compId}, Agric=${agricId}`);
 
         const mathIds = [];
         const scienceIds = [];
@@ -548,11 +560,75 @@ async function setupDatabase() {
             }
         }
 
+        // Seed English Language Topic
+        console.log('Seeding English Language topic...');
+        const engTopicRes = await db.query(
+            `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, 1, $2, $3) RETURNING id`,
+            [engId, 'Parts of Speech', 'Words are divided into different kinds or classes, called Parts of Speech, according to their use; that is, according to the work they do in a sentence. The parts of speech are eight in number: Noun, Pronoun, Adjective, Verb, Adverb, Preposition, Conjunction, and Interjection. A noun is a word used as the name of a person, place, or thing. A pronoun is a word used instead of a noun. An adjective is a word used to add something to the meaning of a noun. A verb is a word used to express an action or state. An adverb is a word used to add something to the meaning of a verb, an adjective, or another adverb.']
+        );
+        let engTopicId = engTopicRes.rows && engTopicRes.rows.length > 0 ? engTopicRes.rows[0].id : engTopicRes.lastID;
+        if (!engTopicId) {
+            const row = await db.query(`SELECT id FROM Topics WHERE title = 'Parts of Speech'`);
+            engTopicId = row.rows[0].id;
+        }
+        await db.query(
+            `INSERT INTO Quizzes (topic_id, question, options, correct_answer) VALUES ($1, $2, $3, $4)`,
+            [engTopicId, 'Which part of speech is a word used as the name of a person, place, or thing?', '["Noun","Pronoun","Verb","Adverb"]', 'Noun']
+        );
+
+        // Seed Social Studies Topic
+        console.log('Seeding Social Studies topic...');
+        const socTopicRes = await db.query(
+            `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, 1, $2, $3) RETURNING id`,
+            [socId, 'Family and Society', 'The family is the basic social unit of society. It typically consists of parents and their children. Families can be nuclear (parents and children) or extended (including grandparents, aunts, uncles, and cousins). The family plays a crucial role in socialization, providing emotional support, and transmitting cultural values to the next generation. Society is a group of people living together in a ordered community, sharing laws, traditions, and values. The stability of a society depends heavily on the strength of its families.']
+        );
+        let socTopicId = socTopicRes.rows && socTopicRes.rows.length > 0 ? socTopicRes.rows[0].id : socTopicRes.lastID;
+        if (!socTopicId) {
+            const row = await db.query(`SELECT id FROM Topics WHERE title = 'Family and Society'`);
+            socTopicId = row.rows[0].id;
+        }
+        await db.query(
+            `INSERT INTO Quizzes (topic_id, question, options, correct_answer) VALUES ($1, $2, $3, $4)`,
+            [socTopicId, 'What is the basic social unit of society?', '["Family","School","Government","Market"]', 'Family']
+        );
+
+        // Seed Computer Studies Topic
+        console.log('Seeding Computer Studies topic...');
+        const compTopicRes = await db.query(
+            `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, 1, $2, $3) RETURNING id`,
+            [compId, 'Introduction to Computers', 'A computer is an electronic device that manipulates information, or data. It has the ability to store, retrieve, and process data. You may already know that you can use a computer to type documents, send email, play games, and browse the Web. You can also use it to edit or create spreadsheets, presentations, and even videos. Computers consist of hardware (the physical parts of the computer like the CPU, keyboard, and monitor) and software (the set of instructions that tells the hardware what to do, like the operating system and applications).']
+        );
+        let compTopicId = compTopicRes.rows && compTopicRes.rows.length > 0 ? compTopicRes.rows[0].id : compTopicRes.lastID;
+        if (!compTopicId) {
+            const row = await db.query(`SELECT id FROM Topics WHERE title = 'Introduction to Computers'`);
+            compTopicId = row.rows[0].id;
+        }
+        await db.query(
+            `INSERT INTO Quizzes (topic_id, question, options, correct_answer) VALUES ($1, $2, $3, $4)`,
+            [compTopicId, 'What are the physical parts of a computer called?', '["Hardware","Software","Data","Network"]', 'Hardware']
+        );
+
+        // Seed Agricultural Science Topic
+        console.log('Seeding Agricultural Science topic...');
+        const agricTopicRes = await db.query(
+            `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, 1, $2, $3) RETURNING id`,
+            [agricId, 'Types of Crops', 'In agriculture, crops are plants that are grown and harvested for profit or subsistence. Crops are classified into different categories based on their uses, life cycles, and growth habits. Common classifications include food crops (grown for human consumption, like rice, maize, and wheat), cash crops (grown for sale or industrial use, like cocoa, cotton, and rubber), forage crops (grown for feeding livestock, like alfalfa and grass), and fiber crops (grown for industrial fibers, like hemp and jute). Proper crop management is essential for ensuring food security.']
+        );
+        let agricTopicId = agricTopicRes.rows && agricTopicRes.rows.length > 0 ? agricTopicRes.rows[0].id : agricTopicRes.lastID;
+        if (!agricTopicId) {
+            const row = await db.query(`SELECT id FROM Topics WHERE title = 'Types of Crops'`);
+            agricTopicId = row.rows[0].id;
+        }
+        await db.query(
+            `INSERT INTO Quizzes (topic_id, question, options, correct_answer) VALUES ($1, $2, $3, $4)`,
+            [agricTopicId, 'Crops grown for sale or industrial use are known as:', '["Cash crops","Food crops","Forage crops","Fiber crops"]', 'Cash crops']
+        );
+
         console.log(`Topics seeded successfully: Math=${mathIds.length}, Science=${scienceIds.length}`);
 
-        // Seed Progress for student (user id = 1): unlock the first 6 Math topics and the first 6 Science topics
-        console.log('Seeding student progress tracking to unlock 12 active topics...');
-        const topicsToUnlock = [...mathIds.slice(0, 6), ...scienceIds.slice(0, 6)];
+        // Seed Progress for student (user id = 1): unlock 9 Math topics and 11 Science topics (20 total active topics)
+        console.log('Seeding student progress tracking to unlock active topics...');
+        const topicsToUnlock = [...mathIds.slice(0, 9), ...scienceIds.slice(0, 11)];
         for (const tId of topicsToUnlock) {
             await db.query(
                 `INSERT INTO ProgressTracking (user_id, topic_id, status) VALUES ($1, $2, $3)`,

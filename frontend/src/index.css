@@ -697,7 +697,28 @@ h1, h2, h3, h4, h5, h6 {
 
     /* Make stats grid more compact */
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+    .stats-grid .card {
+        padding: 0.75rem !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 0.5rem !important;
+    }
+    .stats-grid .card > div:first-child {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.1rem !important;
+    }
+    .stats-grid .card div[style*="font-size: 1.75rem"],
+    .stats-grid .card div[style*="font-size: 2rem"] {
+        font-size: 1.25rem !important;
+    }
+    .stats-grid .card div[style*="font-size: 0.78rem"],
+    .stats-grid .card div[style*="font-size: 0.8rem"] {
+        font-size: 0.65rem !important;
     }
 }
 
