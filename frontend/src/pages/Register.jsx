@@ -44,48 +44,41 @@ export default function Register() {
                 <div style={{ position: 'relative', textAlign: 'center', maxWidth: 340 }} className="animate-fade-in-up">
                     <div style={{
                         width: 72, height: 72,
-                        background: 'var(--panel-bg)',
-                        border: '1px solid var(--panel-border)',
-                        borderRadius: '8px',
+                        background: 'linear-gradient(135deg, #38bdf8, #6366f1)',
+                        borderRadius: '1.5rem',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         margin: '0 auto 2rem',
                         fontSize: '2rem',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                        boxShadow: '0 8px 32px rgba(56,189,248,0.35)'
                     }}>
                         🚀
                     </div>
 
                     <h1 style={{
-                        fontSize: '2.1rem',
-                        fontWeight: 800,
-                        margin: '0 0 0.5rem',
-                        lineHeight: 1.1
+                        fontFamily: 'Outfit, sans-serif',
+                        fontSize: '2.2rem', fontWeight: 800,
+                        letterSpacing: '-0.03em',
+                        margin: '0 0 0.75rem', lineHeight: 1.1
                     }}>
-                        <span className="gradient-text glitch" style={{ letterSpacing: '0.04em', textTransform: 'uppercase' }}>Join LearnSync</span>
-                        <br />
-                        <span style={{ color: 'var(--primary)', fontSize: '1.25rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>ALMS</span>
+                        <span className="gradient-text">Join LearnSync ALMS</span>
                     </h1>
 
-                    <div className="monospace" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2rem' }}>
-                        // CREATE ACCOUNT CREDENTIALS
-                    </div>
-
                     <p style={{
-                        color: 'var(--text-main)', fontSize: '0.92rem',
+                        color: 'var(--text-secondary)', fontSize: '0.95rem',
                         lineHeight: 1.7, marginBottom: '2rem'
                     }}>
-                        Establish your access nodes. Acquire personalized syllabus tracking indices and system recommendation metrics.
+                        Start your adaptive learning journey today. Smart recommendations tailored to your performance.
                     </p>
 
                     <div style={{
-                        background: 'var(--panel-bg)',
-                        border: '1px solid var(--panel-border)',
-                        borderRadius: '8px',
+                        background: 'rgba(255,255,255,0.04)',
+                        border: '1px solid var(--border)',
+                        borderRadius: '1rem',
                         padding: '1.25rem'
                     }}>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0, lineHeight: 1.6 }}>
-                            Choose <strong style={{ color: 'var(--primary)' }}>Student</strong> to begin coursework.<br />
-                            Choose <strong style={{ color: 'var(--primary)' }}>Teacher</strong> to configure subjects and author quizzes.
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0, lineHeight: 1.6 }}>
+                            Choose <strong style={{ color: '#818cf8' }}>Student</strong> to start learning.<br />
+                            Choose <strong style={{ color: '#38bdf8' }}>Teacher</strong> to manage content and create quizzes.
                         </p>
                     </div>
                 </div>
