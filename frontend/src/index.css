@@ -165,10 +165,10 @@ h1, h2, h3, h4, h5, h6 {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--border);
     color: var(--text-primary);
-    padding: 0.875rem 1rem;
+    padding: 0.7rem 0.9rem;
     border-radius: 0.75rem;
     font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     transition: all 0.3s ease;
     outline: none;
 }

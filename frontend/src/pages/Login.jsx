@@ -106,27 +106,27 @@ export default function Login() {
                 <div style={{ width: '100%', maxWidth: 420 }} className="animate-fade-in-up">
                     <h2 style={{
                         fontFamily: 'Outfit, sans-serif',
-                        fontSize: '2rem',
+                        fontSize: '1.6rem',
                         fontWeight: 700,
                         color: 'var(--text-primary)',
-                        margin: '0 0 0.5rem',
+                        margin: '0 0 0.4rem',
                         letterSpacing: '-0.02em'
                     }}>
                         Welcome back
                     </h2>
-                    <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem', fontSize: '0.95rem' }}>
-                        Sign in to continue your learning journey
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '1.75rem', fontSize: '0.85rem' }}>
+                        Sign in to continue
                     </p>
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                                Your Name (Optional — overrides display name)
+                            <label style={{ display: 'block', fontSize: '0.775rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
+                                Your Name (Optional)
                             </label>
                             <input
                                 id="login-name"
                                 type="text"
-                                placeholder="Enter your name to personalize your dashboard"
+                                placeholder="Your display name"
                                 value={form.name}
                                 onChange={e => setForm({ ...form, name: e.target.value })}
                                 className="input-field"
@@ -134,8 +134,8 @@ export default function Login() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                                Email address
+                            <label style={{ display: 'block', fontSize: '0.775rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
+                                Email Address
                             </label>
                             <input
                                 id="login-email"
@@ -149,7 +149,7 @@ export default function Login() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                            <label style={{ display: 'block', fontSize: '0.775rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                                 Password
                             </label>
                             <input
@@ -168,9 +168,9 @@ export default function Login() {
                                 background: 'rgba(248,113,113,0.1)',
                                 border: '1px solid rgba(248,113,113,0.3)',
                                 borderRadius: '0.75rem',
-                                padding: '0.75rem 1rem',
+                                padding: '0.7rem 0.85rem',
                                 color: '#f87171',
-                                fontSize: '0.875rem'
+                                fontSize: '0.825rem'
                             }}>
                                 ⚠ {error}
                             </div>
@@ -181,14 +181,14 @@ export default function Login() {
                             type="submit"
                             disabled={loading}
                             className="btn-primary"
-                            style={{ marginTop: '0.5rem', padding: '0.9rem', fontSize: '1rem', width: '100%' }}
+                            style={{ marginTop: '0.4rem', padding: '0.7rem', fontSize: '0.9rem', width: '100%' }}
                         >
                             {loading ? 'Signing in...' : 'Sign in →'}
                         </button>
                     </form>
 
-                    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                    <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
                             Don't have an account?{' '}
                             <Link to="/register" style={{
                                 color: 'var(--primary)',

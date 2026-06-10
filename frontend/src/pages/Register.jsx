@@ -85,23 +85,23 @@ export default function Register() {
                 <div style={{ width: '100%', maxWidth: 420 }} className="animate-fade-in-up">
                     <h2 style={{
                         fontFamily: 'Outfit, sans-serif',
-                        fontSize: '2rem', fontWeight: 700,
+                        fontSize: '1.6rem', fontWeight: 700,
                         color: 'var(--text-primary)',
-                        margin: '0 0 2.5rem',
+                        margin: '0 0 1.5rem',
                         letterSpacing: '-0.02em'
                     }}>
                         Create your account
                     </h2>
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                                Full name
+                            <label style={{ display: 'block', fontSize: '0.775rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
+                                Full Name
                             </label>
                             <input
                                 id="register-name"
                                 type="text"
-                                placeholder="Your full name"
+                                placeholder="Your name"
                                 value={form.name}
                                 onChange={e => setForm({ ...form, name: e.target.value })}
                                 required
@@ -110,8 +110,8 @@ export default function Register() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-                                Email address
+                            <label style={{ display: 'block', fontSize: '0.775rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
+                                Email Address
                             </label>
                             <input
                                 id="register-email"
@@ -125,7 +125,7 @@ export default function Register() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                            <label style={{ display: 'block', fontSize: '0.775rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                                 Password
                             </label>
                             <input
@@ -141,10 +141,10 @@ export default function Register() {
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                            <label style={{ display: 'block', fontSize: '0.775rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
                                 I am a...
                             </label>
-                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <div style={{ display: 'flex', gap: '0.6rem' }}>
                                 {['student', 'teacher'].map((r) => (
                                     <button
                                         key={r}
@@ -153,7 +153,7 @@ export default function Register() {
                                         onClick={() => setForm({ ...form, role: r })}
                                         style={{
                                             flex: 1,
-                                            padding: '0.75rem',
+                                            padding: '0.6rem',
                                             borderRadius: '0.75rem',
                                             border: form.role === r
                                                 ? '2px solid var(--primary)'
@@ -163,7 +163,7 @@ export default function Register() {
                                                 : 'rgba(255,255,255,0.04)',
                                             color: form.role === r ? 'var(--primary)' : 'var(--text-secondary)',
                                             fontWeight: 600,
-                                            fontSize: '0.9rem',
+                                            fontSize: '0.8rem',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s ease',
                                             textTransform: 'capitalize'
@@ -183,11 +183,11 @@ export default function Register() {
                                 background: 'rgba(248,113,113,0.1)',
                                 border: '1px solid rgba(248,113,113,0.3)',
                                 borderRadius: '0.75rem',
-                                padding: '0.75rem 1rem',
+                                padding: '0.7rem 0.85rem',
                                 color: '#f87171',
-                                fontSize: '0.875rem'
+                                fontSize: '0.825rem'
                             }}>
-                                <AlertTriangle size={16} color="#f87171" style={{ flexShrink: 0 }} />
+                                <AlertTriangle size={15} color="#f87171" style={{ flexShrink: 0 }} />
                                 <span>{error}</span>
                             </div>
                         )}
@@ -197,14 +197,14 @@ export default function Register() {
                             type="submit"
                             disabled={loading}
                             className="btn-primary"
-                            style={{ marginTop: '0.5rem', padding: '0.9rem', fontSize: '1rem', width: '100%' }}
+                            style={{ marginTop: '0.4rem', padding: '0.7rem', fontSize: '0.9rem', width: '100%' }}
                         >
                             {loading ? 'Creating account...' : 'Create account →'}
                         </button>
                     </form>
 
-                    <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                    <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
                             Already have an account?{' '}
                             <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>
                                 Sign in
