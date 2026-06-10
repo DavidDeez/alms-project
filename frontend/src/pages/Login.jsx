@@ -54,15 +54,13 @@ export default function Login() {
 
                     <h1 style={{
                         fontFamily: 'Outfit, sans-serif',
-                        fontSize: '2.5rem',
+                        fontSize: '2.4rem',
                         fontWeight: 800,
                         letterSpacing: '-0.03em',
                         margin: '0 0 0.5rem',
                         lineHeight: 1.1
                     }}>
-                        <span className="glass-luminous-3d">LearnSync</span>
-                        <br />
-                        <span style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 600 }}>ALMS</span>
+                        <span className="glass-luminous-3d">LearnSync ALMS</span>
                     </h1>
 
                     <p style={{
