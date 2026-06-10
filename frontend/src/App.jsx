@@ -55,9 +55,10 @@ function Navbar() {
                     }}>🎓</div>
                     <span className="gradient-text glitch" style={{
                         fontWeight: 800,
-                        fontSize: '1.15rem',
-                        letterSpacing: '0.04em'
-                    }}>ʟᴇᴀʀɴꜱʏɴᴄ</span>
+                        fontSize: '1.1rem',
+                        letterSpacing: '0.04em',
+                        textTransform: 'uppercase'
+                    }}>LearnSync</span>
                 </Link>
 
                 {/* Nav links */}

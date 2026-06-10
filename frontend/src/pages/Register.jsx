@@ -61,13 +61,13 @@ export default function Register() {
                         margin: '0 0 0.5rem',
                         lineHeight: 1.1
                     }}>
-                        <span className="gradient-text glitch" style={{ letterSpacing: '0.05em' }}>ᴊᴏɪɴ ʟᴇᴀʀɴꜱʏɴᴄ</span>
+                        <span className="gradient-text glitch" style={{ letterSpacing: '0.04em', textTransform: 'uppercase' }}>Join LearnSync</span>
                         <br />
-                        <span style={{ color: 'var(--primary)', fontSize: '1.3rem', fontWeight: 600, letterSpacing: '0.05em' }}>ᴀʟᴍꜱ</span>
+                        <span style={{ color: 'var(--primary)', fontSize: '1.25rem', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>ALMS</span>
                     </h1>
 
-                    <div className="monospace" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2rem' }}>
-                        // ᴄʀᴇᴀᴛᴇ ᴀᴄᴄᴏᴜɴᴛ ᴄʀᴇᴅᴇɴᴛɪᴀʟꜱ
+                    <div className="monospace" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2rem' }}>
+                        // CREATE ACCOUNT CREDENTIALS
                     </div>
 
                     <p style={{
