@@ -511,8 +511,8 @@ async function setupDatabase() {
         console.log('Seeding Mathematics topics...');
         for (const topic of mathTopics) {
             const topicRes = await db.query(
-                `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, $2, $3, $4) RETURNING id`,
-                [mathId, topic.order_index, topic.title, topic.content]
+                `INSERT INTO Topics (subject_id, order_index, title, content, youtube_url) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+                [mathId, topic.order_index, topic.title, topic.content, topic.youtube_url || null]
             );
             let topicId;
             if (topicRes.rows && topicRes.rows.length > 0) {
@@ -538,8 +538,8 @@ async function setupDatabase() {
         console.log('Seeding Basic Science topics...');
         for (const topic of scienceTopics) {
             const topicRes = await db.query(
-                `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, $2, $3, $4) RETURNING id`,
-                [sciId, topic.order_index, topic.title, topic.content]
+                `INSERT INTO Topics (subject_id, order_index, title, content, youtube_url) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+                [sciId, topic.order_index, topic.title, topic.content, topic.youtube_url || null]
             );
             let topicId;
             if (topicRes.rows && topicRes.rows.length > 0) {
@@ -564,8 +564,8 @@ async function setupDatabase() {
         // Seed English Language Topic
         console.log('Seeding English Language topic...');
         const engTopicRes = await db.query(
-            `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, 1, $2, $3) RETURNING id`,
-            [engId, 'Parts of Speech', 'Words are divided into different kinds or classes, called Parts of Speech, according to their use; that is, according to the work they do in a sentence. The parts of speech are eight in number: Noun, Pronoun, Adjective, Verb, Adverb, Preposition, Conjunction, and Interjection. A noun is a word used as the name of a person, place, or thing. A pronoun is a word used instead of a noun. An adjective is a word used to add something to the meaning of a noun. A verb is a word used to express an action or state. An adverb is a word used to add something to the meaning of a verb, an adjective, or another adverb.']
+            `INSERT INTO Topics (subject_id, order_index, title, content, youtube_url) VALUES ($1, 1, $2, $3, $4) RETURNING id`,
+            [engId, 'Parts of Speech', 'Words are divided into different kinds or classes, called Parts of Speech, according to their use; that is, according to the work they do in a sentence. The parts of speech are eight in number: Noun, Pronoun, Adjective, Verb, Adverb, Preposition, Conjunction, and Interjection. A noun is a word used as the name of a person, place, or thing. A pronoun is a word used instead of a noun. An adjective is a word used to add something to the meaning of a noun. A verb is a word used to express an action or state. An adverb is a word used to add something to the meaning of a verb, an adjective, or another adverb.', 'https://www.youtube.com/embed/OV37TFJhLFU']
         );
         let engTopicId = engTopicRes.rows && engTopicRes.rows.length > 0 ? engTopicRes.rows[0].id : engTopicRes.lastID;
         if (!engTopicId) {
@@ -580,8 +580,8 @@ async function setupDatabase() {
         // Seed Social Studies Topic
         console.log('Seeding Social Studies topic...');
         const socTopicRes = await db.query(
-            `INSERT INTO Topics (subject_id, order_index, title, content) VALUES ($1, 1, $2, $3) RETURNING id`,
-            [socId, 'Family and Society', 'The family is the basic social unit of society. It typically consists of parents and their children. Families can be nuclear (parents and children) or extended (including grandparents, aunts, uncles, and cousins). The family plays a crucial role in socialization, providing emotional support, and transmitting cultural values to the next generation. Society is a group of people living together in a ordered community, sharing laws, traditions, and values. The stability of a society depends heavily on the strength of its families.']
+            `INSERT INTO Topics (subject_id, order_index, title, content, youtube_url) VALUES ($1, 1, $2, $3, $4) RETURNING id`,
+            [socId, 'Family and Society', 'The family is the basic social unit of society. It typically consists of parents and their children. Families can be nuclear (parents and children) or extended (including grandparents, aunts, uncles, and cousins). The family plays a crucial role in socialization, providing emotional support, and transmitting cultural values to the next generation. Society is a group of people living together in a ordered community, sharing laws, traditions, and values. The stability of a society depends heavily on the strength of its families.', 'https://www.youtube.com/embed/fW8amMCVAJQ']
         );
         let socTopicId = socTopicRes.rows && socTopicRes.rows.length > 0 ? socTopicRes.rows[0].id : socTopicRes.lastID;
         if (!socTopicId) {

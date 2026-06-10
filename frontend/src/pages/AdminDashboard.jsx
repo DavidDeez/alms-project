@@ -250,6 +250,119 @@ export default function AdminDashboard() {
 
     return (
         <div className="page-container" style={{ maxWidth: 1100, fontFamily: 'Inter, sans-serif' }}>
+            <style>{`
+                .tp-tab-bar {
+                    display: flex;
+                    gap: 0.75rem;
+                    margin-bottom: 2rem;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: none;
+                    padding-bottom: 2px;
+                    flex-wrap: nowrap;
+                }
+                .tp-tab-bar::-webkit-scrollbar { display: none; }
+                .tp-tab-bar button { flex-shrink: 0; white-space: nowrap; }
+
+                .tp-subject-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                }
+
+                .tp-topic-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 1.25rem;
+                    gap: 0.75rem;
+                }
+
+                .tp-ai-card {
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+
+                .tp-ai-status {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                    gap: 1rem;
+                    background: rgba(255,255,255,0.02);
+                    border: 1px solid var(--border);
+                    border-radius: 1rem;
+                    padding: 1.25rem 1.5rem;
+                    margin-bottom: 2rem;
+                }
+
+                .tp-save-row {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 0.75rem;
+                    border-top: 1px solid var(--border);
+                    padding-top: 1.5rem;
+                    margin-top: 1rem;
+                }
+
+                .tp-topic-buttons {
+                    display: flex;
+                    gap: 0.5rem;
+                    flex-shrink: 0;
+                    margin-left: 1rem;
+                    flex-wrap: nowrap;
+                }
+
+                .tp-modal-body {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1rem;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                }
+
+                @media (max-width: 640px) {
+                    .tp-ai-card { margin: 0; }
+
+                    .tp-ai-status { flex-direction: column; align-items: flex-start; }
+
+                    .tp-save-row {
+                        flex-direction: column;
+                        align-items: stretch;
+                    }
+                    .tp-save-row button {
+                        width: 100% !important;
+                        justify-content: center;
+                    }
+
+                    .tp-topic-header {
+                        flex-direction: column;
+                        align-items: stretch;
+                    }
+                    .tp-topic-header button {
+                        width: 100%;
+                        justify-content: center;
+                    }
+
+                    .tp-topic-buttons {
+                        display: grid !important;
+                        grid-template-columns: 1fr 1fr;
+                        margin-left: 0 !important;
+                        width: 100% !important;
+                        gap: 0.4rem !important;
+                    }
+                    .tp-topic-buttons button:last-child:nth-child(odd) {
+                        grid-column: 1 / -1;
+                    }
+
+                    .tp-subject-header button { font-size: 0.78rem; }
+                }
+
+                @media (max-width: 400px) {
+                    .tp-tab-bar button { padding: 0.5rem 0.8rem !important; font-size: 0.78rem; }
+                }
+            `}</style>
 
             {/* Success Toast */}
             {successMsg && (
@@ -301,7 +414,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Tab Switcher */}
-            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '2rem' }}>
+            <div className="tp-tab-bar">
                 <button
                     onClick={() => setActiveTab('content')}
                     style={{
@@ -310,15 +423,12 @@ export default function AdminDashboard() {
                         border: activeTab === 'content' ? '1px solid rgba(129,140,248,0.4)' : '1px solid var(--border)',
                         background: activeTab === 'content' ? 'rgba(129,140,248,0.1)' : 'var(--surface)',
                         color: activeTab === 'content' ? 'var(--primary)' : 'var(--text-secondary)',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '0.9rem',
+                        fontWeight: 600, cursor: 'pointer',
+                        transition: 'all 0.2s', fontSize: '0.9rem',
                         display: 'flex', alignItems: 'center', gap: '0.5rem'
                     }}
                 >
-                    <Library size={16} />
-                    <span>Content Manager</span>
+                    <Library size={16} /><span>Content Manager</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('settings')}
@@ -328,15 +438,12 @@ export default function AdminDashboard() {
                         border: activeTab === 'settings' ? '1px solid rgba(129,140,248,0.4)' : '1px solid var(--border)',
                         background: activeTab === 'settings' ? 'rgba(129,140,248,0.1)' : 'var(--surface)',
                         color: activeTab === 'settings' ? 'var(--primary)' : 'var(--text-secondary)',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        fontSize: '0.9rem',
+                        fontWeight: 600, cursor: 'pointer',
+                        transition: 'all 0.2s', fontSize: '0.9rem',
                         display: 'flex', alignItems: 'center', gap: '0.5rem'
                     }}
                 >
-                    <Sliders size={16} />
-                    <span>AI Settings</span>
+                    <Sliders size={16} /><span>AI Settings</span>
                 </button>
             </div>
 
@@ -346,7 +453,7 @@ export default function AdminDashboard() {
 
                 {/* Sidebar — Subjects */}
                 <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                    <div className="tp-subject-header">
                         <h3 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1rem', fontWeight: 700, margin: 0, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Subjects</h3>
                         <button onClick={() => setShowSubjectModal(true)} style={{
                             background: 'rgba(129,140,248,0.15)',
@@ -397,14 +504,14 @@ export default function AdminDashboard() {
                 <div>
                     {currentSubject ? (
                         <>
-                            <div className="flex-responsive" style={{ marginBottom: '1.25rem' }}>
+                            <div className="tp-topic-header">
                                 <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.5rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
                                     {currentSubject.name}
                                     <span style={{ marginLeft: '0.75rem', fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 400 }}>— Topics</span>
                                 </h2>
                                 <button
                                     onClick={() => { setTopicForm({ ...topicForm, subject_id: currentSubject.id }); setShowTopicModal(true); }}
-                                    className="btn-primary" style={{ fontSize: '0.85rem', padding: '0.6rem 1.1rem' }}
+                                    className="btn-primary" style={{ fontSize: '0.85rem', padding: '0.6rem 1.1rem', display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center' }}
                                 >
                                     + Add Topic
                                 </button>
@@ -433,7 +540,7 @@ export default function AdminDashboard() {
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div className="topic-card-buttons">
+                                            <div className="tp-topic-buttons">
                                                 <button
                                                     onClick={() => { setSelectedTopicId(topic.id); setShowQuizModal(true); }}
                                                     style={{
@@ -507,25 +614,14 @@ export default function AdminDashboard() {
 
             {/* AI Settings View */}
             {activeTab === 'settings' && (
-                <div className="card card-padding animate-fade-in-up" style={{ maxWidth: 800, margin: '0 auto' }}>
+                <div className="card card-padding animate-fade-in-up tp-ai-card">
                     <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                         <Sliders size={24} color="#818cf8" />
                         <span className="gradient-text">AI Configuration Settings</span>
                     </h2>
 
                     {/* Live Status indicator */}
-                    <div style={{
-                        background: 'rgba(255, 255, 255, 0.02)',
-                        border: '1px solid var(--border)',
-                        borderRadius: '1rem',
-                        padding: '1.25rem 1.5rem',
-                        marginBottom: '2rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        flexWrap: 'wrap',
-                        gap: '1rem'
-                    }}>
+                    <div className="tp-ai-status">
                         <div>
                             <h4 style={{ margin: '0 0 0.25rem', fontFamily: 'Outfit, sans-serif', fontSize: '1.05rem', fontWeight: 600 }}>OpenRouter API Connection</h4>
                             <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -717,7 +813,7 @@ export default function AdminDashboard() {
                         )}
 
                         {/* Submit Action */}
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid var(--border)', paddingTop: '1.5rem', marginTop: '1rem' }}>
+                        <div className="tp-save-row">
                             <button
                                 type="submit"
                                 disabled={savingSettings}
@@ -753,6 +849,7 @@ export default function AdminDashboard() {
 
             {showTopicModal && (
                 <Modal title="Add New Topic" onClose={() => { setTopicForm({ subject_id: '', title: '', content: '', youtube_url: '' }); setShowTopicModal(false); }}>
+                <div className="tp-modal-body">
                     <form onSubmit={handleCreateTopic} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <div>
                             <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Topic Title</label>

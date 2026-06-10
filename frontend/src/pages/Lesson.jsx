@@ -56,6 +56,49 @@ export default function Lesson() {
 
     return (
         <div className="page-container" style={{ maxWidth: 820, fontFamily: 'Inter, sans-serif' }}>
+            <style>{`
+                .lesson-video-wrap {
+                    position: relative;
+                    padding-bottom: 56.25%;
+                    height: 0;
+                    overflow: hidden;
+                    border-radius: 1rem;
+                    border: 1px solid rgba(255,255,255,0.08);
+                    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+                }
+                .lesson-video-wrap iframe {
+                    position: absolute;
+                    top: 0; left: 0;
+                    width: 100%; height: 100%;
+                }
+                .lesson-cta {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 1.5rem 2rem;
+                    gap: 1rem;
+                }
+                .lesson-cta-btn {
+                    font-size: 0.95rem;
+                    padding: 0.75rem 1.75rem;
+                    white-space: nowrap;
+                    flex-shrink: 0;
+                }
+                @media (max-width: 600px) {
+                    .lesson-cta {
+                        flex-direction: column;
+                        align-items: stretch;
+                        padding: 1.25rem;
+                        text-align: center;
+                    }
+                    .lesson-cta-btn {
+                        width: 100%;
+                        font-size: 1rem;
+                        padding: 0.875rem;
+                    }
+                    .card-padding { padding: 1.25rem !important; }
+                }
+            `}</style>
 
             {/* Breadcrumb */}
             <div className="animate-fade-in" style={{ marginBottom: '1.5rem' }}>
@@ -161,26 +204,13 @@ export default function Lesson() {
                         }}>▶</span>
                         Video Lesson
                     </h2>
-                    <div style={{
-                        position: 'relative',
-                        paddingBottom: '56.25%',
-                        height: 0,
-                        overflow: 'hidden',
-                        borderRadius: '1rem',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        boxShadow: '0 12px 32px rgba(0,0,0,0.5)'
-                    }}>
+                    <div className="lesson-video-wrap">
                         <iframe
                             src={topic.youtube_url}
                             title={topic.title}
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             allowFullScreen
-                            style={{
-                                position: 'absolute',
-                                top: 0, left: 0,
-                                width: '100%', height: '100%'
-                            }}
                         />
                     </div>
                 </div>
@@ -251,8 +281,7 @@ export default function Lesson() {
             )}
 
             {/* Footer CTA */}
-            <div className="card flex-responsive animate-fade-in-up" style={{
-                padding: '1.5rem 2rem',
+            <div className="card lesson-cta animate-fade-in-up" style={{
                 background: 'rgba(52,211,153,0.05)', borderColor: 'rgba(52,211,153,0.15)',
                 animationDelay: '0.3s', animationFillMode: 'both'
             }}>
@@ -266,8 +295,7 @@ export default function Lesson() {
                 </div>
                 <button
                     onClick={() => navigate(`/quiz/${topic.id}`)}
-                    className="btn-success"
-                    style={{ fontSize: '0.95rem', padding: '0.75rem 1.75rem', whiteSpace: 'nowrap', marginLeft: '1rem' }}
+                    className="btn-success lesson-cta-btn"
                 >
                     Take Quiz →
                 </button>

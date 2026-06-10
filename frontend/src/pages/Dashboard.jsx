@@ -8,22 +8,16 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 function StatCard({ icon, label, value, color }) {
     return (
-        <div className="card glass-hover" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <div style={{
-                width: 50, height: 50, borderRadius: '0.875rem',
+        <div className="db-stat-card card glass-hover">
+            <div className="db-stat-icon" style={{
                 background: `${color}18`, border: `1px solid ${color}30`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1.4rem', flexShrink: 0
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
             }}>
                 {icon}
             </div>
             <div>
-                <div style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.75rem', fontWeight: 800, color, lineHeight: 1 }}>
-                    {value}
-                </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.2rem', fontWeight: 500 }}>
-                    {label}
-                </div>
+                <div className="db-stat-value" style={{ color, lineHeight: 1 }}>{value}</div>
+                <div className="db-stat-label">{label}</div>
             </div>
         </div>
     );
@@ -281,6 +275,76 @@ export default function Dashboard() {
 
     return (
         <div className="page-container" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <style>{`
+                .db-stat-card {
+                    padding: 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+                .db-stat-icon {
+                    width: 50px; height: 50px;
+                    border-radius: 0.875rem;
+                    font-size: 1.4rem;
+                    flex-shrink: 0;
+                }
+                .db-stat-value {
+                    font-family: 'Outfit', sans-serif;
+                    font-size: 1.75rem;
+                    font-weight: 800;
+                }
+                .db-stat-label {
+                    color: var(--text-muted);
+                    font-size: 0.78rem;
+                    margin-top: 0.2rem;
+                    font-weight: 500;
+                }
+
+                .db-mastery-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 0.625rem;
+                }
+                .db-mastery-badges {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                }
+
+                @media (max-width: 640px) {
+                    .db-stat-card {
+                        padding: 1rem;
+                        flex-direction: column;
+                        align-items: center;
+                        text-align: center;
+                        gap: 0.5rem;
+                    }
+                    .db-stat-icon {
+                        width: 38px; height: 38px;
+                        border-radius: 0.625rem;
+                        font-size: 1rem;
+                    }
+                    .db-stat-value { font-size: 1.4rem; }
+                    .db-stat-label { font-size: 0.68rem; }
+
+                    .db-mastery-row { flex-wrap: wrap; gap: 0.4rem; }
+                    .db-mastery-badges { gap: 0.4rem; }
+
+                    .topics-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .stats-grid {
+                        grid-template-columns: repeat(3, 1fr) !important;
+                        gap: 0.5rem !important;
+                    }
+                }
+
+                @media (max-width: 380px) {
+                    .db-stat-value { font-size: 1.2rem; }
+                    .db-stat-label { font-size: 0.62rem; }
+                }
+            `}</style>
 
             {/* Hero */}
             <div className="animate-fade-in-up" style={{ marginBottom: '2.5rem' }}>
@@ -347,11 +411,11 @@ export default function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
                             {data.subjects.map((subject, i) => (
                                 <div key={subject.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.1}s`, animationFillMode: 'both' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.625rem' }}>
+                                    <div className="db-mastery-row">
                                         <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>
                                             {subject.name}
                                         </span>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                        <div className="db-mastery-badges">
                                             <span style={{
                                                 fontFamily: 'Outfit, sans-serif',
                                                 fontWeight: 700, fontSize: '1rem',
