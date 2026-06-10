@@ -3,6 +3,7 @@ import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'
 import axios from 'axios';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ParticleBackground from './components/ParticleBackground';
 import Dashboard from './pages/Dashboard';
 import Lesson from './pages/Lesson';
 import Quiz from './pages/Quiz';
@@ -166,7 +167,13 @@ function AppRoutes() {
 function App() {
     return (
         <AuthProvider>
-            <AppRoutes />
+            <div className="crt">
+                <div className="crt-screen">
+                    <div className="crt-vignette" />
+                    <ParticleBackground />
+                    <AppRoutes />
+                </div>
+            </div>
         </AuthProvider>
     );
 }
