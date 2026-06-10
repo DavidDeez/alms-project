@@ -1041,7 +1041,9 @@ export default function AdminDashboard() {
                             {saving ? 'Creating...' : 'Create Topic'}
                         </button>
                     </form>
+                </div>
                 </Modal>
+
             )}
 
             {showQuizModal && (
