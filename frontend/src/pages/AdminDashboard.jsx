@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Check, X, Library, BookOpen, GraduationCap, Sliders, Sparkles, Trash2, FileText, Activity, Trash } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -235,12 +236,15 @@ export default function AdminDashboard() {
             {successMsg && (
                 <div className="animate-fade-in" style={{
                     position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 999,
-                    background: 'rgba(52,211,153,0.15)',
-                    border: '1px solid rgba(52,211,153,0.4)',
+                    background: 'rgba(52,211,153,0.08)',
+                    border: '1px solid rgba(52,211,153,0.25)',
                     borderRadius: '0.75rem', padding: '0.75rem 1.25rem',
-                    color: '#34d399', fontWeight: 600, fontSize: '0.875rem'
+                    color: '#34d399', fontWeight: 600, fontSize: '0.875rem',
+                    display: 'flex', alignItems: 'center', gap: '0.5rem',
+                    boxShadow: '0 4px 12px rgba(52,211,153,0.1)'
                 }}>
-                    ✓ {successMsg}
+                    <Check size={16} />
+                    <span>{successMsg}</span>
                 </div>
             )}
 
@@ -253,7 +257,7 @@ export default function AdminDashboard() {
                     <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Manage subjects, topics, and quiz content</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>👋 {user?.name}</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{user?.name}</span>
                     <button onClick={() => { logout(); navigate('/login'); }} className="btn-ghost" style={{ fontSize: '0.85rem' }}>
                         Sign out
                     </button>
@@ -263,9 +267,9 @@ export default function AdminDashboard() {
             {/* Stats Row */}
             <div className="stats-grid">
                 {[
-                    { label: 'Total Subjects', value: data?.subjects.length ?? 0, icon: '📚', color: '#818cf8' },
-                    { label: 'Total Topics', value: data?.subjects.reduce((acc, s) => acc + s.topics.length, 0) ?? 0, icon: '📖', color: '#38bdf8' },
-                    { label: 'Enrolled Students', value: data?.studentCount ?? 0, icon: '🎓', color: '#34d399' },
+                    { label: 'Total Subjects', value: data?.subjects.length ?? 0, icon: <Library size={24} color="#818cf8" />, color: '#818cf8' },
+                    { label: 'Total Topics', value: data?.subjects.reduce((acc, s) => acc + s.topics.length, 0) ?? 0, icon: <BookOpen size={24} color="#38bdf8" />, color: '#38bdf8' },
+                    { label: 'Enrolled Students', value: data?.studentCount ?? 0, icon: <GraduationCap size={24} color="#34d399" />, color: '#34d399' },
                 ].map((stat) => (
                     <div key={stat.label} className="card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <div style={{
@@ -273,7 +277,7 @@ export default function AdminDashboard() {
                             background: `${stat.color}18`,
                             border: `1px solid ${stat.color}30`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '1.5rem', flexShrink: 0
+                            flexShrink: 0
                         }}>
                             {stat.icon}
                         </div>
@@ -298,10 +302,12 @@ export default function AdminDashboard() {
                         fontWeight: 600,
                         cursor: 'pointer',
                         transition: 'all 0.2s',
-                        fontSize: '0.9rem'
+                        fontSize: '0.9rem',
+                        display: 'flex', alignItems: 'center', gap: '0.5rem'
                     }}
                 >
-                    📚 Content Manager
+                    <Library size={16} />
+                    <span>Content Manager</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('settings')}
@@ -314,10 +320,12 @@ export default function AdminDashboard() {
                         fontWeight: 600,
                         cursor: 'pointer',
                         transition: 'all 0.2s',
-                        fontSize: '0.9rem'
+                        fontSize: '0.9rem',
+                        display: 'flex', alignItems: 'center', gap: '0.5rem'
                     }}
                 >
-                    ⚙️ AI Settings
+                    <Sliders size={16} />
+                    <span>AI Settings</span>
                 </button>
             </div>
 
@@ -436,10 +444,20 @@ export default function AdminDashboard() {
                                                         color: '#818cf8', borderRadius: '0.5rem',
                                                         padding: '0.4rem 0.8rem', fontSize: '0.8rem',
                                                         cursor: 'pointer', fontWeight: 600,
-                                                        display: 'flex', alignItems: 'center', gap: '0.25rem'
+                                                        display: 'flex', alignItems: 'center', gap: '0.35rem'
                                                     }}
                                                 >
-                                                    {generatingId === topic.id ? '⚡ Generating...' : '✨ AI Quiz'}
+                                                    {generatingId === topic.id ? (
+                                                        <>
+                                                            <Activity size={13} className="animate-pulse" />
+                                                            <span>Generating...</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Sparkles size={13} />
+                                                            <span>AI Quiz</span>
+                                                        </>
+                                                    )}
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteTopic(topic.id)}
@@ -448,27 +466,28 @@ export default function AdminDashboard() {
                                                         border: '1px solid rgba(248,113,113,0.25)',
                                                         color: '#f87171', borderRadius: '0.5rem',
                                                         padding: '0.4rem 0.7rem', fontSize: '0.8rem',
-                                                        cursor: 'pointer'
+                                                        cursor: 'pointer',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                     }}
                                                 >
-                                                    🗑
+                                                    <Trash2 size={14} />
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                                 {currentSubject.topics.length === 0 && (
-                                    <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📝</div>
-                                        <p style={{ color: 'var(--text-muted)' }}>No topics yet. Add one to get started.</p>
+                                    <div className="card" style={{ padding: '3rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                                        <FileText size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
+                                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>No topics yet. Add one to get started.</p>
                                     </div>
                                 )}
                             </div>
                         </>
                     ) : (
-                        <div className="card" style={{ padding: '4rem', textAlign: 'center' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📚</div>
-                            <p style={{ color: 'var(--text-muted)' }}>Select a subject or create one to get started.</p>
+                        <div className="card" style={{ padding: '4rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                            <Library size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
+                            <p style={{ color: 'var(--text-muted)', margin: 0 }}>Select a subject or create one to get started.</p>
                         </div>
                     )}
                 </div>
@@ -478,8 +497,9 @@ export default function AdminDashboard() {
             {/* AI Settings View */}
             {activeTab === 'settings' && (
                 <div className="card card-padding animate-fade-in-up" style={{ maxWidth: 800, margin: '0 auto' }}>
-                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span>⚙️</span> <span className="gradient-text">AI Configuration Settings</span>
+                    <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 700, margin: '0 0 1.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                        <Sliders size={24} color="#818cf8" />
+                        <span className="gradient-text">AI Configuration Settings</span>
                     </h2>
 
                     {/* Live Status indicator */}
@@ -621,7 +641,17 @@ export default function AdminDashboard() {
                                         gap: '0.5rem'
                                     }}
                                 >
-                                    {testingConnection ? '⚡ Testing Connection...' : '🔌 Test AI Connection'}
+                                    {testingConnection ? (
+                                        <>
+                                            <Activity size={16} className="animate-pulse" />
+                                            <span>Testing Connection...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Activity size={16} />
+                                            <span>Test AI Connection</span>
+                                        </>
+                                    )}
                                 </button>
                                 {testResult && (
                                     <div style={{
@@ -633,7 +663,10 @@ export default function AdminDashboard() {
                                         background: testResult.success ? 'rgba(52, 211, 153, 0.05)' : 'rgba(248, 113, 113, 0.05)',
                                         color: testResult.success ? '#34d399' : '#f87171'
                                     }}>
-                                        {testResult.success ? '✓' : '✗'} {testResult.message}
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                            {testResult.success ? <Check size={16} /> : <X size={16} />}
+                                            <span>{testResult.message}</span>
+                                        </div>
                                     </div>
                                 )}
                             </div>

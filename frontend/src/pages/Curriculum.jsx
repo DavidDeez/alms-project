@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { Calendar, Check, BookOpen, Lock, GraduationCap, Search, Target, Lightbulb, Video, ChevronDown, Plus } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -205,8 +206,8 @@ export default function Curriculum() {
                         ))}
                     </div>
                 ) : currentWeeks.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📅</div>
+                    <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        <Calendar size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
                         <p style={{ margin: 0 }}>No syllabus schedule compiled for this selection yet.</p>
                     </div>
                 ) : (
@@ -278,13 +279,22 @@ export default function Curriculum() {
                                                     {user.role === 'student' ? (
                                                         <>
                                                             {dbTopic.progress_status === 'completed' && (
-                                                                <span className="badge badge-success">✅ Mastered</span>
+                                                                <span className="badge badge-success" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                                                    <Check size={12} />
+                                                                    <span>Mastered</span>
+                                                                </span>
                                                             )}
                                                             {dbTopic.progress_status === 'unlocked' && (
-                                                                <span className="badge badge-primary">📖 In Progress</span>
+                                                                <span className="badge badge-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                                                    <BookOpen size={12} />
+                                                                    <span>In Progress</span>
+                                                                </span>
                                                             )}
                                                             {dbTopic.progress_status === 'locked' && (
-                                                                <span className="badge badge-danger">🔒 Locked</span>
+                                                                <span className="badge badge-danger" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                                                    <Lock size={12} />
+                                                                    <span>Locked</span>
+                                                                </span>
                                                             )}
 
                                                             {dbTopic.progress_status !== 'locked' ? (
@@ -307,7 +317,10 @@ export default function Curriculum() {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <span className="badge badge-success">🎓 ALMS Coursework</span>
+                                                            <span className="badge badge-success" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                                                <GraduationCap size={12} />
+                                                                <span>ALMS Coursework</span>
+                                                            </span>
                                                             <button
                                                                 onClick={() => navigate(`/admin`)}
                                                                 className="btn-ghost"
@@ -321,38 +334,41 @@ export default function Curriculum() {
                                             ) : (
                                                 <>
                                                     {/* Unseeded syllabus topic resource option */}
-                                                    <span className="badge" style={{ background: 'rgba(255,255,255,0.03)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
-                                                        Syllabus Resource
-                                                    </span>
+                                                            <span className="badge" style={{ background: 'rgba(255,255,255,0.03)', color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                                                                Syllabus Resource
+                                                            </span>
 
-                                                    {user.role === 'teacher' ? (
-                                                        <Link
-                                                            to={getTeacherCreateUrl(item)}
-                                                            className="btn-primary"
-                                                            style={{
-                                                                fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem',
-                                                                background: 'linear-gradient(135deg, #10b981, #059669)',
-                                                                boxShadow: 'none', textDecoration: 'none'
-                                                            }}
-                                                        >
-                                                            ➕ Create
-                                                        </Link>
-                                                    ) : (
-                                                        <button
-                                                            onClick={() => openMediaAssistant(item.topic)}
-                                                            className="btn-ghost"
-                                                            style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem', color: '#38bdf8', borderColor: 'rgba(56,189,248,0.3)' }}
-                                                        >
-                                                            🔍 Explore
-                                                        </button>
+                                                            {user.role === 'teacher' ? (
+                                                                <Link
+                                                                    to={getTeacherCreateUrl(item)}
+                                                                    className="btn-primary"
+                                                                    style={{
+                                                                        fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem',
+                                                                        background: 'linear-gradient(135deg, #10b981, #059669)',
+                                                                        boxShadow: 'none', textDecoration: 'none',
+                                                                        display: 'flex', alignItems: 'center', gap: '0.25rem'
+                                                                    }}
+                                                                >
+                                                                    <Plus size={12} />
+                                                                    <span>Create</span>
+                                                                </Link>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => openMediaAssistant(item.topic)}
+                                                                    className="btn-ghost"
+                                                                    style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem', color: '#38bdf8', borderColor: 'rgba(56,189,248,0.3)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                                                                >
+                                                                    <Search size={12} />
+                                                                    <span>Explore</span>
+                                                                </button>
+                                                            )}
+                                                        </>
                                                     )}
-                                                </>
-                                            )}
 
-                                            {/* Expand Icon */}
-                                            <div style={{ color: 'var(--text-muted)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'none', marginLeft: '0.5rem' }}>
-                                                ▼
-                                            </div>
+                                                    {/* Expand Icon */}
+                                                    <div style={{ color: 'var(--text-muted)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'none', marginLeft: '0.5rem', display: 'flex', alignItems: 'center' }}>
+                                                        <ChevronDown size={14} />
+                                                    </div>
                                         </div>
                                     </div>
 
@@ -364,8 +380,9 @@ export default function Curriculum() {
                                             background: 'rgba(0,0,0,0.1)'
                                         }}>
                                             <div style={{ paddingTop: '1rem' }}>
-                                                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                                    🎯 Weekly Learning Objectives
+                                                <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                                    <Target size={14} color="#818cf8" />
+                                                    <span>Weekly Learning Objectives</span>
                                                 </h4>
                                                 <ul style={{ margin: 0, paddingLeft: '1.25rem', color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
                                                     {item.objectives.map((obj, oIdx) => (
@@ -387,8 +404,9 @@ export default function Curriculum() {
                                                         flexWrap: 'wrap',
                                                         gap: '0.5rem'
                                                     }}>
-                                                        <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 500 }}>
-                                                            💡 Study assistance media helper is ready for this topic.
+                                                        <span style={{ fontSize: '0.8rem', color: '#38bdf8', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                                            <Lightbulb size={14} />
+                                                            <span>Study assistance media helper is ready for this topic.</span>
                                                         </span>
                                                         <button
                                                             onClick={() => openMediaAssistant(item.topic)}
@@ -435,11 +453,12 @@ export default function Curriculum() {
                                 display: 'flex', alignItems: 'center', justifyContent: 'center'
                             }}
                         >
-                            ✕
+                            <X size={16} />
                         </button>
 
-                        <span className="badge" style={{ background: 'rgba(56,189,248,0.12)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)', marginBottom: '0.75rem' }}>
-                            📺 Media Assistant
+                        <span className="badge" style={{ background: 'rgba(56,189,248,0.12)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)', marginBottom: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <Video size={12} />
+                            <span>Media Assistant</span>
                         </span>
                         
                         <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.35rem', fontWeight: 800, margin: '0 0 1.25rem', color: 'var(--text-primary)', pr: '2rem' }}>
@@ -464,15 +483,19 @@ export default function Curriculum() {
                             </div>
                         ) : (
                             /* Fallback cards for non-seeded custom topics */
-                            <div style={{
+                             <div style={{
                                 padding: '2rem 1.5rem',
                                 background: 'rgba(255,255,255,0.01)',
                                 border: '1px solid var(--border)',
                                 borderRadius: '0.875rem',
                                 textAlign: 'center',
-                                marginBottom: '1.25rem'
+                                marginBottom: '1.25rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}>
-                                <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>💡</div>
+                                <Lightbulb size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
                                 <h3 style={{ fontFamily: 'Outfit, sans-serif', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>No Local Seed Video</h3>
                                 <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0 0 1.25rem', lineHeight: 1.5 }}>
                                     There is no pre-curated video in the ALMS database for this specific week's syllabus topic yet. However, we have assembled a customized YouTube video study search just for you!
@@ -482,10 +505,14 @@ export default function Curriculum() {
                                     className="btn-primary"
                                     style={{
                                         background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
-                                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
+                                        boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem'
                                     }}
                                 >
-                                    🔍 Search Video Guides on YouTube
+                                    <Search size={16} />
+                                    <span>Search Video Guides on YouTube</span>
                                 </button>
                             </div>
                         )}

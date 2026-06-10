@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { Brain, BarChart3, Trophy, GraduationCap } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -45,7 +46,7 @@ export default function Login() {
                     borderRadius: '50%', filter: 'blur(40px)'
                 }} />
 
-                <div style={{ position: 'relative', textAlign: 'center', maxWidth: 380 }} className="animate-fade-in-up">
+                <div style={{ position: 'relative', textAlign: 'center', maxWidth: 360 }} className="animate-fade-in-up">
                     {/* Logo */}
                     <div style={{
                         width: 72, height: 72,
@@ -53,10 +54,9 @@ export default function Login() {
                         borderRadius: '1.5rem',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         margin: '0 auto 2rem',
-                        fontSize: '2rem',
                         boxShadow: '0 8px 32px rgba(99,102,241,0.4)'
                     }}>
-                        🎓
+                        <GraduationCap size={36} color="white" />
                     </div>
 
                     <h1 style={{
@@ -82,21 +82,29 @@ export default function Login() {
                     </p>
 
                     {/* Feature chips */}
-                    {['🧠  Adaptive Learning Engine', '📊  Real-time Progress Tracking', '🏆  Mastery-Based Advancement'].map((feat) => (
-                        <div key={feat} style={{
-                            display: 'flex', alignItems: 'center', gap: '0.5rem',
-                            background: 'rgba(255,255,255,0.05)',
-                            border: '1px solid var(--border)',
-                            borderRadius: '0.75rem',
-                            padding: '0.6rem 1rem',
-                            marginBottom: '0.75rem',
-                            fontSize: '0.875rem',
-                            color: 'var(--text-secondary)',
-                            textAlign: 'left'
-                        }}>
-                            {feat}
-                        </div>
-                    ))}
+                    {[
+                        { icon: Brain, text: 'Adaptive Learning Engine', color: '#818cf8' },
+                        { icon: BarChart3, text: 'Real-time Progress Tracking', color: '#38bdf8' },
+                        { icon: Trophy, text: 'Mastery-Based Advancement', color: '#fbbf24' }
+                    ].map((feat) => {
+                        const IconComponent = feat.icon;
+                        return (
+                            <div key={feat.text} style={{
+                                display: 'flex', alignItems: 'center', gap: '0.75rem',
+                                background: 'rgba(255,255,255,0.04)',
+                                border: '1px solid var(--border)',
+                                borderRadius: '0.75rem',
+                                padding: '0.6rem 1rem',
+                                marginBottom: '0.75rem',
+                                fontSize: '0.875rem',
+                                color: 'var(--text-secondary)',
+                                textAlign: 'left'
+                            }}>
+                                <IconComponent size={18} color={feat.color} style={{ flexShrink: 0 }} />
+                                <span>{feat.text}</span>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 

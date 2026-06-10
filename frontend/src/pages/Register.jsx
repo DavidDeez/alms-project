@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { Rocket, GraduationCap, AlertTriangle } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -44,14 +45,14 @@ export default function Register() {
                 <div style={{ position: 'relative', textAlign: 'center', maxWidth: 340 }} className="animate-fade-in-up">
                     <div style={{
                         width: 72, height: 72,
-                        background: 'linear-gradient(135deg, #38bdf8, #6366f1)',
-                        borderRadius: '1.5rem',
+                        background: 'var(--panel-bg)',
+                        border: '1px solid var(--panel-border)',
+                        borderRadius: '8px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         margin: '0 auto 2rem',
-                        fontSize: '2rem',
-                        boxShadow: '0 8px 32px rgba(56,189,248,0.35)'
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
                     }}>
-                        🚀
+                        <Rocket size={34} color="var(--primary)" />
                     </div>
 
                     <h1 style={{
@@ -176,14 +177,17 @@ export default function Register() {
                                             textTransform: 'capitalize'
                                         }}
                                     >
-                                        {r === 'student' ? '🎓 Student' : '🧑‍🏫 Teacher'}
+                                        {r === 'student' ? 'Student' : 'Teacher'}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        {error && (
+                         {error && (
                             <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
                                 background: 'rgba(248,113,113,0.1)',
                                 border: '1px solid rgba(248,113,113,0.3)',
                                 borderRadius: '0.75rem',
@@ -191,7 +195,8 @@ export default function Register() {
                                 color: '#f87171',
                                 fontSize: '0.875rem'
                             }}>
-                                ⚠ {error}
+                                <AlertTriangle size={16} color="#f87171" style={{ flexShrink: 0 }} />
+                                <span>{error}</span>
                             </div>
                         )}
 

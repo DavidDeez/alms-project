@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { CheckCircle2, BarChart3, Target, AlertTriangle, Settings, Clock, RotateCw, LogOut, Search, Award, BookOpen, Play } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -59,7 +60,7 @@ function TopicCard({ topic, onStart, index }) {
                     {topic.subject}
                 </span>
                 {isReview && (
-                    <span style={{ fontSize: '1.3rem' }}>⚠️</span>
+                    <AlertTriangle size={18} color="#f87171" style={{ flexShrink: 0 }} />
                 )}
             </div>
 
@@ -97,12 +98,14 @@ function TopicCard({ topic, onStart, index }) {
                     color: 'white', fontWeight: 700,
                     fontSize: '0.9rem', cursor: 'pointer',
                     transition: 'all 0.3s ease',
-                    boxShadow: `0 4px 15px ${accentColor}30`
+                    boxShadow: `0 4px 15px ${accentColor}30`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
                 }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
             >
-                {isReview ? '📖 Review Material' : '▶ Continue Lesson'}
+                {isReview ? <BookOpen size={16} /> : <Play size={16} />}
+                <span>{isReview ? 'Review Material' : 'Continue Lesson'}</span>
             </button>
         </div>
     );
@@ -182,8 +185,8 @@ export default function Dashboard() {
             <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', fontFamily: 'Inter, sans-serif' }}>
                 <div className="card animate-fade-in-up" style={{ maxWidth: 600, width: '100%', padding: '2.5rem', border: '1px solid rgba(248, 113, 113, 0.25)', background: 'rgba(20, 10, 10, 0.45)', backdropFilter: 'blur(12px)', position: 'relative' }}>
                     
-                    <div style={{ position: 'absolute', top: -30, left: 'calc(50% - 30px)', width: 60, height: 60, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', boxShadow: '0 4px 20px rgba(239,68,68,0.2)' }}>
-                        ⚠️
+                    <div style={{ position: 'absolute', top: -30, left: 'calc(50% - 30px)', width: 60, height: 60, borderRadius: '50%', background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(239,68,68,0.2)' }}>
+                        <AlertTriangle size={28} color="#f87171" />
                     </div>
 
                     <h2 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.6rem', fontWeight: 800, textAlign: 'center', marginTop: '1rem', marginBottom: '0.75rem', color: '#f87171' }}>
@@ -214,7 +217,7 @@ export default function Dashboard() {
                     {isLiveFrontEnd && isLocalBackend ? (
                         /* Case 1: Live site querying localhost */
                         <div style={{ background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.25)', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.75rem' }}>
-                            <h4 style={{ margin: '0 0 0.5rem', color: '#818cf8', fontSize: '0.9rem', fontWeight: 700 }}>⚙️ Missing Environment Variable</h4>
+                            <h4 style={{ margin: '0 0 0.5rem', color: '#818cf8', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Settings size={16} /> Missing Environment Variable</h4>
                             <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.85rem', lineHeight: 1.5 }}>
                                 Your live site is attempting to connect to a local server (<code>http://localhost:5000</code>). In your Render Dashboard under the <strong>Front-end Static Site settings</strong>:
                             </p>
@@ -228,7 +231,7 @@ export default function Dashboard() {
                     ) : (
                         /* Case 2: Render Free Tier backend sleep */
                         <div style={{ background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.75rem' }}>
-                            <h4 style={{ margin: '0 0 0.5rem', color: '#38bdf8', fontSize: '0.9rem', fontWeight: 700 }}>⏳ Render Free Tier Startup Delay</h4>
+                            <h4 style={{ margin: '0 0 0.5rem', color: '#38bdf8', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.35rem' }}><Clock size={16} /> Render Free Tier Startup Delay</h4>
                             <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '0.85rem', lineHeight: 1.5 }}>
                                 On Render's free tier, the backend web service spins down automatically after 15 minutes of inactivity. When you visit after a break:
                             </p>
@@ -245,25 +248,28 @@ export default function Dashboard() {
                         <button 
                             onClick={handleRetry} 
                             className="btn-primary" 
-                            style={{ width: '100%', padding: '0.9rem', fontSize: '0.95rem', fontWeight: 700, background: 'linear-gradient(135deg, #6366f1, #818cf8)', boxShadow: '0 4px 15px rgba(99,102,241,0.3)' }}
+                            style={{ width: '100%', padding: '0.9rem', fontSize: '0.95rem', fontWeight: 700, background: 'linear-gradient(135deg, #6366f1, #818cf8)', boxShadow: '0 4px 15px rgba(99,102,241,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                         >
-                            🔄 Retry Connection
+                            <RotateCw size={16} />
+                            <span>Retry Connection</span>
                         </button>
                         
                         <div style={{ display: 'flex', gap: '0.75rem' }}>
                             <button 
                                 onClick={handleSignOut} 
                                 className="btn-ghost" 
-                                style={{ flex: 1, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderColor: 'var(--border)' }}
+                                style={{ flex: 1, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderColor: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}
                             >
-                                🚪 Sign Out / Reset Session
+                                <LogOut size={14} />
+                                <span>Sign Out / Reset</span>
                             </button>
                             <button 
                                 onClick={() => window.open(`${API_URL}/api/debug`, '_blank')} 
                                 className="btn-ghost" 
-                                style={{ flex: 1, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderColor: 'var(--border)' }}
+                                style={{ flex: 1, padding: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)', borderColor: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}
                             >
-                                🔍 Test API URL directly
+                                <Search size={14} />
+                                <span>Test API URL</span>
                             </button>
                         </div>
                     </div>
@@ -284,7 +290,7 @@ export default function Dashboard() {
                     fontWeight: 800, margin: '0 0 0.5rem',
                     letterSpacing: '-0.03em', lineHeight: 1.1
                 }}>
-                    Welcome back, <span className="gradient-text">{data.userName}</span> 👋
+                    Welcome back, <span className="gradient-text">{data.userName}</span>
                 </h1>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', margin: 0 }}>
                     Your adaptive learning journey continues. Keep pushing forward!
@@ -293,9 +299,9 @@ export default function Dashboard() {
 
             {/* Stats */}
             <div className="stats-grid">
-                <StatCard icon="✅" label="Topics Completed"  value={data.stats?.completedTopics ?? 0} color="#34d399" />
-                <StatCard icon="📊" label="Average Score"     value={`${data.stats?.avgScore ?? 0}%`} color="#818cf8" />
-                <StatCard icon="🎯" label="Quiz Attempts"     value={data.stats?.totalAttempts ?? 0} color="#38bdf8" />
+                <StatCard icon={<CheckCircle2 size={24} color="#34d399" />} label="Topics Completed"  value={data.stats?.completedTopics ?? 0} color="#34d399" />
+                <StatCard icon={<BarChart3 size={24} color="#818cf8" />} label="Average Score"     value={`${data.stats?.avgScore ?? 0}%`} color="#818cf8" />
+                <StatCard icon={<Target size={24} color="#38bdf8" />} label="Quiz Attempts"     value={data.stats?.totalAttempts ?? 0} color="#38bdf8" />
             </div>
 
             {/* Active Topics */}
@@ -308,8 +314,8 @@ export default function Dashboard() {
                 </h2>
 
                 {data.activeTopics.length === 0 ? (
-                    <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏆</div>
+                    <div className="card" style={{ padding: '3rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        <Award size={48} color="#fbbf24" style={{ marginBottom: '1rem' }} />
                         <h3 style={{ fontFamily: 'Outfit, sans-serif', color: 'var(--text-primary)', margin: '0 0 0.5rem' }}>
                             All caught up!
                         </h3>
