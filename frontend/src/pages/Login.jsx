@@ -49,36 +49,39 @@ export default function Login() {
                     {/* Logo */}
                     <div style={{
                         width: 72, height: 72,
-                        background: 'linear-gradient(135deg, #6366f1, #38bdf8)',
-                        borderRadius: '1.5rem',
+                        background: 'var(--panel-bg)',
+                        border: '1px solid var(--panel-border)',
+                        borderRadius: '8px',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         margin: '0 auto 2rem',
                         fontSize: '2rem',
-                        boxShadow: '0 8px 32px rgba(99,102,241,0.4)'
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
                     }}>
                         🎓
                     </div>
 
                     <h1 style={{
-                        fontFamily: 'Outfit, sans-serif',
                         fontSize: '2.5rem',
                         fontWeight: 800,
-                        letterSpacing: '-0.03em',
-                        margin: '0 0 0.75rem',
+                        margin: '0 0 0.5rem',
                         lineHeight: 1.1
                     }}>
-                        <span className="gradient-text">LearnSync</span>
+                        <span className="gradient-text glitch" style={{ letterSpacing: '0.05em' }}>ʟᴇᴀʀɴꜱʏɴᴄ</span>
                         <br />
-                        <span style={{ color: 'var(--text-primary)', fontSize: '1.5rem', fontWeight: 600 }}>ALMS</span>
+                        <span style={{ color: 'var(--primary)', fontSize: '1.4rem', fontWeight: 600, letterSpacing: '0.05em' }}>ᴀʟᴍꜱ</span>
                     </h1>
 
+                    <div className="monospace" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '2rem' }}>
+                        // ᴀᴅᴀᴘᴛɪᴠᴇ ʟᴇᴀʀɴɪɴɢ ɪɴꜰʀᴀꜱᴛʀᴜᴄᴛᴜʀᴇ
+                    </div>
+
                     <p style={{
-                        color: 'var(--text-secondary)',
-                        fontSize: '1rem',
+                        color: 'var(--text-main)',
+                        fontSize: '0.92rem',
                         lineHeight: 1.7,
                         marginBottom: '2.5rem'
                     }}>
-                        Your personalized adaptive learning platform. Master topics at your own pace with intelligent guidance.
+                        Next-generation adaptive learning environment. Master core syllabus topics at your own pace with system-guided pathways.
                     </p>
 
                     {/* Feature chips */}
