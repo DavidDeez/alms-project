@@ -116,7 +116,27 @@ function Navbar() {
                     {user.role === 'student' && <Link to="/" className="nav-link">Dashboard</Link>}
                     {user.role === 'teacher' && <Link to="/admin" className="nav-link">Teacher Panel</Link>}
                     <Link to="/curriculum" className="nav-link">NERDC Curriculum</Link>
+                    <button onClick={handleLogout} className="nb-mini-signout" style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'var(--text-muted)',
+                        borderRadius: '0.5rem',
+                        padding: '0.35rem 0.7rem',
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        marginLeft: '0.25rem',
+                        whiteSpace: 'nowrap',
+                        fontFamily: 'Inter, sans-serif'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,113,113,0.12)'; e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.3)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                    >
+                        Sign out
+                    </button>
                 </div>
+
 
                 {/* Desktop profile + signout | Mobile: avatar + hamburger */}
                 <div className="nb-profile">
