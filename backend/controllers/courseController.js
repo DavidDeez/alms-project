@@ -82,16 +82,23 @@ exports.getDashboard = async (req, res) => {
         }
 
         // Get current "unlocked" but not completed topics
+        // We order by order_index so we can strictly pluck only the earliest week per subject
         const activeTopicsResult = await db.query(`
             SELECT t.id, t.title, t.order_index, s.name as subject_name, pt.status
             FROM ProgressTracking pt
             JOIN Topics t ON pt.topic_id = t.id
             JOIN Subjects s ON t.subject_id = s.id
             WHERE pt.user_id = $1 AND pt.status = 'unlocked'
+            ORDER BY t.subject_id, t.order_index ASC
         `, [userId]);
 
         const activeTopics = [];
+        const seenSubjects = new Set();
+
         for (const topic of activeTopicsResult.rows) {
+            // STRICT PROGRESSION RULE: Only allow the student to see the earliest unlocked week for a subject.
+            if (seenSubjects.has(topic.subject_name)) continue;
+            seenSubjects.add(topic.subject_name);
             const attemptResult = await db.query(`
                 SELECT score FROM QuizAttempts 
                 WHERE user_id = $1 AND topic_id = $2 
