@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import Curriculum from './pages/Curriculum';
+import BackgroundVideo from './components/BackgroundVideo';
 
 function Navbar() {
     const { user, logout } = useAuth();
@@ -253,8 +254,9 @@ function AppRoutes() {
 
     return (
         <>
+            <BackgroundVideo />
             <Navbar />
-            <main style={{ minHeight: 'calc(100vh - 64px)' }}>
+            <main style={{ minHeight: 'calc(100vh - 64px)', position: 'relative', zIndex: 1 }}>
                 <Routes>
                     <Route path="/login"    element={<Login />} />
                     <Route path="/register" element={<Register />} />
