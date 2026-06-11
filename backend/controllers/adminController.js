@@ -13,8 +13,12 @@ async function getSystemSetting(key, fallbackValue) {
 }
 
 async function getAISettings() {
-    const apiKey = await getSystemSetting('openrouter_api_key', process.env.OPENROUTER_API_KEY || '');
-    const model = await getSystemSetting('openrouter_model', process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash');
+    let apiKey = await getSystemSetting('openrouter_api_key', null);
+    if (!apiKey) apiKey = process.env.OPENROUTER_API_KEY || '';
+    
+    let model = await getSystemSetting('openrouter_model', null);
+    if (!model) model = process.env.OPENROUTER_MODEL || 'google/gemini-2.5-flash';
+    
     const questionCount = parseInt(await getSystemSetting('ai_question_count', '5')) || 5;
     return { apiKey, model, questionCount };
 }
