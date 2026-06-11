@@ -104,27 +104,11 @@ export default function Curriculum() {
 
     const currentWeeks = CURRICULUM_DATA[selectedSubject]?.[selectedGrade]?.[selectedTerm] || [];
 
-    // Calculate sequential locking (must pass week N to attempt week N+1)
-    let cascadeLock = false;
+    // Map the current weeks to their database topics without cascade locking
     const computedWeeks = currentWeeks.map((item, index) => {
         const dbTopic = getMatchingDbTopic(item);
-        
-        let isEffectivelyLocked = cascadeLock;
-        
-        if (!cascadeLock) {
-            if (dbTopic) {
-                if (dbTopic.progress_status === 'locked') {
-                    isEffectivelyLocked = true;
-                }
-                if (dbTopic.progress_status !== 'completed') {
-                    cascadeLock = true;
-                }
-            } else {
-                cascadeLock = true;
-            }
-        }
-        
-        return { ...item, dbTopic, isEffectivelyLocked };
+        // We no longer lock weeks based on previous incomplete weeks
+        return { ...item, dbTopic, isEffectivelyLocked: false };
     });
 
     return (
