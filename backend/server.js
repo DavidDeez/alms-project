@@ -13,10 +13,27 @@ const autoInitializeDatabase = async () => {
     try {
         await db.query('SELECT 1 FROM Users LIMIT 1');
         console.log('Database tables verified.');
+        
+        // Ensure SystemSettings table exists (added later in development)
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS SystemSettings (
+                setting_key VARCHAR(100) PRIMARY KEY,
+                setting_value TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
     } catch (err) {
         console.log('Database tables not found. Auto-initializing and seeding database...');
         try {
             await setupDatabase();
+            
+            await db.query(`
+                CREATE TABLE IF NOT EXISTS SystemSettings (
+                    setting_key VARCHAR(100) PRIMARY KEY,
+                    setting_value TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
             console.log('Database auto-initialization and seeding complete.');
         } catch (setupErr) {
             console.error('Failed to auto-initialize database:', setupErr);
