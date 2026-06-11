@@ -47,12 +47,20 @@ function TopicCard({ topic, onStart, onQuiz, index }) {
         >
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                <span className="badge" style={{
-                    background: `${accentColor}15`, color: accentColor,
-                    border: `1px solid ${accentColor}30`, fontSize: '0.7rem'
-                }}>
-                    {topic.subject}
-                </span>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <span className="badge" style={{
+                        background: `${accentColor}15`, color: accentColor,
+                        border: `1px solid ${accentColor}30`, fontSize: '0.7rem'
+                    }}>
+                        {topic.subject}
+                    </span>
+                    <span className="badge" style={{
+                        background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)',
+                        border: '1px solid rgba(255,255,255,0.1)', fontSize: '0.7rem'
+                    }}>
+                        Week {topic.weekNumber}
+                    </span>
+                </div>
                 {isReview && (
                     <AlertTriangle size={18} color="#f87171" style={{ flexShrink: 0 }} />
                 )}
@@ -396,7 +404,7 @@ export default function Dashboard() {
                     fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700,
                     color: 'var(--text-primary)', margin: '0 0 1.25rem', letterSpacing: '-0.01em'
                 }}>
-                    Active Topics
+                    Current Week's Topics
                 </h2>
 
                 {data.activeTopics.length === 0 ? (

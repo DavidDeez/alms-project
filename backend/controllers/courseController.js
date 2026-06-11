@@ -60,10 +60,30 @@ exports.getDashboard = async (req, res) => {
                 completionRate: Math.round((completedTopics / totalTopics) * 100)
             });
         }
+        // Auto-enroll new students in Week 1 topics
+        for (const subject of subjectsResult.rows) {
+            const hasProgress = await db.query(
+                `SELECT 1 FROM ProgressTracking pt JOIN Topics t ON pt.topic_id = t.id WHERE pt.user_id = $1 AND t.subject_id = $2 LIMIT 1`,
+                [userId, subject.id]
+            );
+            
+            if (hasProgress.rows.length === 0) {
+                const week1Topic = await db.query(
+                    `SELECT id FROM Topics WHERE subject_id = $1 AND order_index = 1 LIMIT 1`,
+                    [subject.id]
+                );
+                if (week1Topic.rows.length > 0) {
+                    await db.query(
+                        `INSERT INTO ProgressTracking (user_id, topic_id, status) VALUES ($1, $2, 'unlocked')`,
+                        [userId, week1Topic.rows[0].id]
+                    );
+                }
+            }
+        }
 
         // Get current "unlocked" but not completed topics
         const activeTopicsResult = await db.query(`
-            SELECT t.id, t.title, s.name as subject_name, pt.status
+            SELECT t.id, t.title, t.order_index, s.name as subject_name, pt.status
             FROM ProgressTracking pt
             JOIN Topics t ON pt.topic_id = t.id
             JOIN Subjects s ON t.subject_id = s.id
@@ -86,6 +106,7 @@ exports.getDashboard = async (req, res) => {
             activeTopics.push({
                 id: topic.id,
                 title: topic.title,
+                weekNumber: topic.order_index,
                 subject: topic.subject_name,
                 lastScore: lastScore,
                 needsReview: lastScore !== null && lastScore < 65
