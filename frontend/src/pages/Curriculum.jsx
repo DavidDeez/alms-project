@@ -104,6 +104,29 @@ export default function Curriculum() {
 
     const currentWeeks = CURRICULUM_DATA[selectedSubject]?.[selectedGrade]?.[selectedTerm] || [];
 
+    // Calculate sequential locking (must pass week N to attempt week N+1)
+    let cascadeLock = false;
+    const computedWeeks = currentWeeks.map((item, index) => {
+        const dbTopic = getMatchingDbTopic(item);
+        
+        let isEffectivelyLocked = cascadeLock;
+        
+        if (!cascadeLock) {
+            if (dbTopic) {
+                if (dbTopic.progress_status === 'locked') {
+                    isEffectivelyLocked = true;
+                }
+                if (dbTopic.progress_status !== 'completed') {
+                    cascadeLock = true;
+                }
+            } else {
+                cascadeLock = true;
+            }
+        }
+        
+        return { ...item, dbTopic, isEffectivelyLocked };
+    });
+
     return (
         <div className="page-container" style={{ fontFamily: 'Inter, sans-serif', maxWidth: 1000 }}>
             
@@ -205,15 +228,15 @@ export default function Curriculum() {
                             <div key={i} className="skeleton" style={{ height: 60, borderRadius: '0.75rem' }} />
                         ))}
                     </div>
-                ) : currentWeeks.length === 0 ? (
+                ) : computedWeeks.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                         <Calendar size={48} color="var(--text-muted)" style={{ marginBottom: '1rem' }} />
                         <p style={{ margin: 0 }}>No syllabus schedule compiled for this selection yet.</p>
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {currentWeeks.map((item, index) => {
-                            const dbTopic = getMatchingDbTopic(item);
+                        {computedWeeks.map((item, index) => {
+                            const { dbTopic, isEffectivelyLocked } = item;
                             const isExpanded = expandedTopic === index;
 
                             return (
@@ -273,7 +296,21 @@ export default function Curriculum() {
 
                                         {/* Status / Actions Badging */}
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
-                                            {dbTopic ? (
+                                            {user.role === 'student' && isEffectivelyLocked ? (
+                                                <>
+                                                    <span className="badge badge-danger" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                                        <Lock size={12} />
+                                                        <span>Locked</span>
+                                                    </span>
+                                                    <button
+                                                        disabled
+                                                        className="btn-ghost"
+                                                        style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem', opacity: 0.5, cursor: 'not-allowed' }}
+                                                    >
+                                                        Study
+                                                    </button>
+                                                </>
+                                            ) : dbTopic ? (
                                                 <>
                                                     {/* Seeded and Mapped topic status markers */}
                                                     {user.role === 'student' ? (
@@ -297,7 +334,7 @@ export default function Curriculum() {
                                                                 </span>
                                                             )}
 
-                                                            {dbTopic.progress_status !== 'locked' ? (
+                                                            {dbTopic.progress_status !== 'locked' && !isEffectivelyLocked ? (
                                                                 <button
                                                                     onClick={() => navigate(`/lesson/${dbTopic.id}`)}
                                                                     className="btn-primary"
@@ -305,15 +342,7 @@ export default function Curriculum() {
                                                                 >
                                                                     {dbTopic.progress_status === 'completed' ? 'Review' : 'Start'}
                                                                 </button>
-                                                            ) : (
-                                                                <button
-                                                                    disabled
-                                                                    className="btn-ghost"
-                                                                    style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem', opacity: 0.5, cursor: 'not-allowed' }}
-                                                                >
-                                                                    Study
-                                                                </button>
-                                                            )}
+                                                            ) : null}
                                                         </>
                                                     ) : (
                                                         <>
