@@ -51,6 +51,13 @@ export default function Quiz() {
         .catch(err => { console.error(err); setSubmitting(false); });
     };
 
+    const handleRetake = () => {
+        setAnswers({});
+        setScore(null);
+        setResult(null);
+        window.scrollTo(0, 0);
+    };
+
     if (loading) {
         return (
             <div className="page-container" style={{ maxWidth: 760 }}>
@@ -149,17 +156,26 @@ export default function Quiz() {
 
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                         {!passed && (
-                            <button
-                                onClick={() => navigate(`/lesson/${topicId}`)}
-                                className="btn-ghost"
-                                style={{ fontSize: '0.9rem' }}
-                            >
-                                ← Review Lesson
-                            </button>
+                            <>
+                                <button
+                                    onClick={() => navigate(`/lesson/${topicId}`)}
+                                    className="btn-ghost"
+                                    style={{ fontSize: '0.9rem' }}
+                                >
+                                    ← Review Lesson
+                                </button>
+                                <button
+                                    onClick={handleRetake}
+                                    className="btn-primary"
+                                    style={{ fontSize: '0.9rem', background: '#f59e0b', borderColor: '#f59e0b', color: '#111827' }}
+                                >
+                                    Retake Quiz Now ↻
+                                </button>
+                            </>
                         )}
                         <button
                             onClick={() => navigate('/')}
-                            className="btn-primary"
+                            className={passed ? "btn-primary" : "btn-ghost"}
                             style={{ fontSize: '0.9rem' }}
                         >
                             {passed ? 'Continue Learning →' : 'Back to Dashboard'}

@@ -639,7 +639,16 @@ export default function AdminDashboard() {
                                                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                         fontSize: '0.75rem', fontWeight: 700, color: 'white', flexShrink: 0
                                                     }}>{i + 1}</span>
-                                                    <h4 style={{ fontFamily: 'Outfit, sans-serif', fontSize: '1.05rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)' }}>
+                                                    <h4 
+                                                        onClick={() => navigate(`/lesson/${topic.id}`)}
+                                                        style={{ 
+                                                            fontFamily: 'Outfit, sans-serif', fontSize: '1.05rem', fontWeight: 600, margin: 0, 
+                                                            color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline', textDecorationColor: 'transparent', transition: 'text-decoration-color 0.2s ease'
+                                                        }}
+                                                        onMouseEnter={e => e.currentTarget.style.textDecorationColor = 'var(--primary)'}
+                                                        onMouseLeave={e => e.currentTarget.style.textDecorationColor = 'transparent'}
+                                                        title="Click to preview the lesson page for students"
+                                                    >
                                                         {topic.title}
                                                     </h4>
                                                 </div>

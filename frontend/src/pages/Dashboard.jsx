@@ -426,6 +426,44 @@ export default function Dashboard() {
                 )}
             </div>
 
+            {/* Recent Quiz Scores */}
+            {data.recentQuizzes && data.recentQuizzes.length > 0 && (
+                <div style={{ marginBottom: '2.5rem' }}>
+                    <h2 style={{
+                        fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700,
+                        color: 'var(--text-primary)', margin: '0 0 1.25rem', letterSpacing: '-0.01em'
+                    }}>
+                        Recent Quiz Scores
+                    </h2>
+                    <div className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+                        {data.recentQuizzes.map((quiz, i) => (
+                            <div key={i} style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
+                                padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '0.75rem',
+                                border: '1px solid var(--border)'
+                            }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                        {quiz.subject_name} • {new Date(quiz.created_at).toLocaleDateString()}
+                                    </div>
+                                    <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                        {quiz.topic_title}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <span style={{ fontSize: '1.1rem', fontWeight: 700, color: quiz.passed ? '#34d399' : '#f87171' }}>
+                                        {quiz.score}%
+                                    </span>
+                                    <span className={`badge ${quiz.passed ? 'badge-success' : 'badge-danger'}`} style={{ fontSize: '0.7rem', padding: '0.2rem 0.5rem' }}>
+                                        {quiz.passed ? 'Passed' : 'Failed'}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Subject Progress */}
             <div>
                 <h2 style={{

@@ -144,10 +144,22 @@ exports.getDashboard = async (req, res) => {
             ORDER BY t.subject_id, t.order_index
         `, [userId]);
 
+        // Fetch recent quiz history
+        const recentQuizzesResult = await db.query(`
+            SELECT qa.id, qa.score, qa.passed, qa.created_at, t.title as topic_title, s.name as subject_name
+            FROM QuizAttempts qa
+            JOIN Topics t ON qa.topic_id = t.id
+            JOIN Subjects s ON t.subject_id = s.id
+            WHERE qa.user_id = $1
+            ORDER BY qa.created_at DESC
+            LIMIT 5
+        `, [userId]);
+
         res.json({
             userName,
             subjects,
             activeTopics,
+            recentQuizzes: recentQuizzesResult.rows,
             allTopics: allTopicsResult.rows,
             stats: { avgScore, totalAttempts, completedTopics }
         });
