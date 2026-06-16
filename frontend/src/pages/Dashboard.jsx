@@ -426,6 +426,40 @@ export default function Dashboard() {
                 )}
             </div>
 
+            {/* Newly Added Topics */}
+            {(() => {
+                // Find the newest topics (highest IDs) that are not already in activeTopics
+                const activeIds = new Set(data.activeTopics.map(t => t.id));
+                const newTopics = [...(data.allTopics || [])]
+                    .sort((a, b) => b.id - a.id)
+                    .filter(t => !activeIds.has(t.id) && t.progress_status !== 'completed')
+                    .slice(0, 3);
+
+                if (newTopics.length === 0) return null;
+
+                return (
+                    <div style={{ marginBottom: '2.5rem' }}>
+                        <h2 style={{
+                            fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700,
+                            color: 'var(--text-primary)', margin: '0 0 1.25rem', letterSpacing: '-0.01em'
+                        }}>
+                            Newly Added Custom Topics
+                        </h2>
+                        <div className="topics-grid">
+                            {newTopics.map((topic, i) => (
+                                <TopicCard key={topic.id} topic={{
+                                    id: topic.id,
+                                    title: topic.title,
+                                    subject: topic.subject_name,
+                                    weekNumber: 'New',
+                                    needsReview: false
+                                }} index={i} onStart={id => navigate(`/lesson/${id}`)} onQuiz={id => navigate(`/quiz/${id}`)} />
+                            ))}
+                        </div>
+                    </div>
+                );
+            })()}
+
             {/* Recent Quiz Scores */}
             {data.recentQuizzes && data.recentQuizzes.length > 0 && (
                 <div style={{ marginBottom: '2.5rem' }}>
