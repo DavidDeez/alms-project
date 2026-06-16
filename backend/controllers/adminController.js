@@ -372,8 +372,8 @@ END_FORMULA
 NOTE: [write a short important note or tip here]
 
 Rules:
-- Write at least 700 words of educational content
-- Include: Introduction, Key Concepts, at least 2-3 fully worked Examples, Summary
+- Write at least 1500 to 2000 words of deeply comprehensive educational content. MAKE IT VERY LONG.
+- Include: Detailed Introduction, Deep Dive into Key Concepts, at least 4-5 fully worked Examples, Practice Exercises (with solutions), and a Comprehensive Summary.
 - For maths/science: show every step in examples
 - Use Nigerian curriculum context where relevant
 - Do NOT use markdown code fences (\`\`\`)
