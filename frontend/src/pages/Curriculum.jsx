@@ -105,11 +105,17 @@ export default function Curriculum() {
     const currentWeeks = CURRICULUM_DATA[selectedSubject]?.[selectedGrade]?.[selectedTerm] || [];
 
     // Map the current weeks to their database topics without cascade locking
+    const matchedDbTopicIds = new Set();
     const computedWeeks = currentWeeks.map((item, index) => {
         const dbTopic = getMatchingDbTopic(item);
+        if (dbTopic) matchedDbTopicIds.add(dbTopic.id);
         // We no longer lock weeks based on previous incomplete weeks
         return { ...item, dbTopic, isEffectivelyLocked: false };
     });
+
+    const unmappedTopics = dbTopics.filter(t => 
+        t.subject_name === selectedSubject && !matchedDbTopicIds.has(t.id)
+    );
 
     return (
         <div className="page-container" style={{ fontFamily: 'Inter, sans-serif', maxWidth: 1000 }}>
@@ -454,6 +460,62 @@ export default function Curriculum() {
                                 </div>
                             );
                         })}
+                        
+                        {unmappedTopics.length > 0 && (
+                            <div style={{ marginTop: '2rem' }}>
+                                <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', color: 'var(--text-primary)' }}>Additional Custom Topics</h3>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                    {unmappedTopics.map((dbTopic, index) => (
+                                        <div
+                                            key={`custom-${index}`}
+                                            style={{
+                                                border: '1px solid var(--border)',
+                                                borderRadius: '0.875rem',
+                                                background: 'rgba(255, 255, 255, 0.01)',
+                                                overflow: 'hidden',
+                                                padding: '1.25rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                gap: '1rem',
+                                                flexWrap: 'wrap'
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: 280 }}>
+                                                <div style={{
+                                                    padding: '0.4rem 0.8rem', background: 'rgba(255,255,255,0.06)', borderRadius: '0.5rem',
+                                                    fontFamily: 'Outfit, sans-serif', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-secondary)', border: '1px solid var(--border)'
+                                                }}>
+                                                    Custom
+                                                </div>
+                                                <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                                    {dbTopic.title}
+                                                </h3>
+                                            </div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                {user.role === 'student' ? (
+                                                    <button
+                                                        onClick={() => navigate(`/lesson/${dbTopic.id}`)}
+                                                        className="btn-primary"
+                                                        style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem' }}
+                                                    >
+                                                        {dbTopic.progress_status === 'completed' ? 'Review' : 'Start'}
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => navigate(`/admin`)}
+                                                        className="btn-ghost"
+                                                        style={{ fontSize: '0.75rem', padding: '0.4rem 0.8rem', borderRadius: '0.5rem' }}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
