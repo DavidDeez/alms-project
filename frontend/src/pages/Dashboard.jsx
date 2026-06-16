@@ -426,16 +426,14 @@ export default function Dashboard() {
                 )}
             </div>
 
-            {/* Newly Added Topics */}
+            {/* Additional Custom Topics */}
             {(() => {
-                // Find the newest topics (highest IDs) that are not already in activeTopics
+                // Show all topics that are not currently active and not completed
                 const activeIds = new Set(data.activeTopics.map(t => t.id));
-                const newTopics = [...(data.allTopics || [])]
-                    .sort((a, b) => b.id - a.id)
-                    .filter(t => !activeIds.has(t.id) && t.progress_status !== 'completed')
-                    .slice(0, 3);
+                const customTopics = [...(data.allTopics || [])]
+                    .filter(t => !activeIds.has(t.id) && t.progress_status !== 'completed');
 
-                if (newTopics.length === 0) return null;
+                if (customTopics.length === 0) return null;
 
                 return (
                     <div style={{ marginBottom: '2.5rem' }}>
@@ -443,15 +441,15 @@ export default function Dashboard() {
                             fontFamily: 'Outfit, sans-serif', fontSize: '1.3rem', fontWeight: 700,
                             color: 'var(--text-primary)', margin: '0 0 1.25rem', letterSpacing: '-0.01em'
                         }}>
-                            Newly Added Custom Topics
+                            Additional Custom Topics
                         </h2>
                         <div className="topics-grid">
-                            {newTopics.map((topic, i) => (
+                            {customTopics.map((topic, i) => (
                                 <TopicCard key={topic.id} topic={{
                                     id: topic.id,
                                     title: topic.title,
                                     subject: topic.subject_name,
-                                    weekNumber: 'New',
+                                    weekNumber: 'Custom',
                                     needsReview: false
                                 }} index={i} onStart={id => navigate(`/lesson/${id}`)} onQuiz={id => navigate(`/quiz/${id}`)} />
                             ))}
